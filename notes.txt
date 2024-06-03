@@ -1,0 +1,11 @@
+-------PRISMA
+//--- 'npx prisma init'
+//--- 'npx prisma migrate dev'
+//--- 'npx prisma generate' 
+
+model User {
+  id    String  @id @default(uuid()) @db.Uuid
+  name  String
+  email String  @unique @db.VarChar(50)
+  password String
+}
