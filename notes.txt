@@ -4,8 +4,38 @@
 //--- 'npx prisma generate' 
 
 model User {
-  id    String  @id @default(uuid()) @db.Uuid
-  name  String
-  email String  @unique @db.VarChar(50)
+  id       String  @id @default(uuid()) @db.Uuid
+  name     String
+  email    String  @unique @db.VarChar(50)
   password String
+  events   Event[]  // Relacionamento com eventos
+}
+
+model Event {
+  id                 String     @id @default(uuid()) @db.Uuid
+  userId             String     @db.Uuid
+  name               String
+  address            String
+  isPublic           Boolean
+  once               Boolean
+  prev_events_count  Int
+  custom_rules       Boolean
+  absences_limit     Boolean
+  max_absences       Int
+  delays_limit       Boolean
+  max_delays         Int
+  start_date         DateTime
+  end_date           DateTime
+  start_time         DateTime
+  end_time           DateTime
+  user               User       @relation(fields: [userId], references: [id]) 
+  recurrences        Recurrence[] 
+}
+
+model Recurrence {
+  id         String  @id @default(uuid()) @db.Uuid
+  eventId    String  @db.Uuid
+  day        String
+  recurrence Boolean
+  event      Event   @relation(fields: [eventId], references: [id]) 
 }
