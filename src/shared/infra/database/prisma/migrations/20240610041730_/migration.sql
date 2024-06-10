@@ -16,7 +16,6 @@ CREATE TABLE "Event" (
     "address" TEXT NOT NULL,
     "isPublic" BOOLEAN NOT NULL,
     "once" BOOLEAN NOT NULL,
-    "prev_events_count" INTEGER NOT NULL,
     "custom_rules" BOOLEAN NOT NULL,
     "absences_limit" BOOLEAN NOT NULL,
     "max_absences" INTEGER NOT NULL,

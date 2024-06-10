@@ -18,7 +18,7 @@ model User {
   name     String
   email    String  @unique @db.VarChar(50)
   password String
-  events   Event[]  // Relacionamento com eventos
+  events   Event[] 
 }
 
 model Event {
@@ -28,7 +28,6 @@ model Event {
   address            String
   isPublic           Boolean
   once               Boolean
-  prev_events_count  Int
   custom_rules       Boolean
   absences_limit     Boolean
   max_absences       Int

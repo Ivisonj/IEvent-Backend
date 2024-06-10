@@ -18,7 +18,6 @@ model Event {
   address            String
   isPublic           Boolean
   once               Boolean
-  prev_events_count  Int
   custom_rules       Boolean
   absences_limit     Boolean
   max_absences       Int
