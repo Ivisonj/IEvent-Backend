@@ -13,11 +13,14 @@ export class UserMapper {
   }
 
   static toDomain(raw: UserPrisma): User {
-    const userOrError = User.create({
-      name: raw.name,
-      email: raw.email,
-      password: raw.password,
-    });
+    const userOrError = User.create(
+      {
+        name: raw.name,
+        email: raw.email,
+        password: raw.password,
+      },
+      raw.id,
+    );
     return userOrError;
   }
 

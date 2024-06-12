@@ -28,23 +28,26 @@ export class EventMapper {
     raw: EventPrisma,
     recurrences: RecurrencePrisma[],
   ): Event {
-    const eventOrError = Event.create({
-      userId: raw.userId,
-      name: raw.name,
-      address: raw.address,
-      isPublic: raw.isPublic,
-      once: raw.once,
-      recurrence: recurrences.map((r) => r.day),
-      custom_rules: raw.custom_rules,
-      absences_limit: raw.absences_limit,
-      max_absences: raw.max_absences,
-      delays_limit: raw.delays_limit,
-      max_delays: raw.max_delays,
-      start_date: raw.start_date,
-      end_date: raw.end_date,
-      start_time: raw.start_time,
-      end_time: raw.end_time,
-    });
+    const eventOrError = Event.create(
+      {
+        userId: raw.userId,
+        name: raw.name,
+        address: raw.address,
+        isPublic: raw.isPublic,
+        once: raw.once,
+        recurrence: recurrences.map((r) => r.day),
+        custom_rules: raw.custom_rules,
+        absences_limit: raw.absences_limit,
+        max_absences: raw.max_absences,
+        delays_limit: raw.delays_limit,
+        max_delays: raw.max_delays,
+        start_date: raw.start_date,
+        end_date: raw.end_date,
+        start_time: raw.start_time,
+        end_time: raw.end_time,
+      },
+      raw.id,
+    );
     return eventOrError;
   }
 
