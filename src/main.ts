@@ -13,6 +13,7 @@ async function bootstrap() {
     .setDescription('The IEvent API description')
     .setVersion('1.0')
     .addTag('User Account')
+    .addTag('Create Event')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
