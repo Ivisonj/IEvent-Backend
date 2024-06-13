@@ -36,4 +36,15 @@ export class PgEventRepository implements IEventRepository {
 
     return EventMapper.toDomain(result.createdEvent, result.recurrences);
   }
+
+  async findByUserId(userId: string): Promise<Event[]> {
+    const events = await this.prisma.event.findMany({
+      where: { userId },
+      include: { recurrences: true },
+    });
+
+    return events.map((event) =>
+      EventMapper.toDomain(event, event.recurrences),
+    );
+  }
 }

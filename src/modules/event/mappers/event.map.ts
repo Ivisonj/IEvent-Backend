@@ -6,6 +6,7 @@ import { EventDTO } from '../dtos/event.DTO';
 export class EventMapper {
   public static toDTO(event: Event): EventDTO {
     return {
+      id: event.id,
       userId: event.userId,
       name: event.name,
       address: event.address,

@@ -4,9 +4,11 @@ import { CreateEventController } from './use-cases/create-event/create-event.con
 import { IEventRepository } from './repositories/event-repository.interface';
 import { PgEventRepository } from './repositories/postgres/pg-event.repository';
 import { CreateEventUseCase } from './use-cases/create-event/create-event.useCase';
+import { GetEventsByUserIdController } from './use-cases/get-event-by-userId/get-event-by-userId.controller';
+import { GetEventsByUserIdUseCase } from './use-cases/get-event-by-userId/get-event-by-userId.useCase';
 
 @Module({
-  controllers: [CreateEventController],
+  controllers: [CreateEventController, GetEventsByUserIdController],
   providers: [
     PrismaService,
     {
@@ -14,6 +16,7 @@ import { CreateEventUseCase } from './use-cases/create-event/create-event.useCas
       useClass: PgEventRepository,
     },
     CreateEventUseCase,
+    GetEventsByUserIdUseCase,
   ],
   exports: [IEventRepository],
 })
