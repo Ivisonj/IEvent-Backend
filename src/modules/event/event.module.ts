@@ -8,12 +8,15 @@ import { GetEventsByUserIdController } from './use-cases/get-event-by-userId/get
 import { GetEventsByUserIdUseCase } from './use-cases/get-event-by-userId/get-event-by-userId.useCase';
 import { GetEventByIdController } from './use-cases/get-event-by-id/get-event-by-id.controller';
 import { GetEventByIdUseCase } from './use-cases/get-event-by-id/get-event-by-id.useCase';
+import { GetEventByNameController } from './use-cases/get-event-by-name/get-event-by-name.controller';
+import { GetEventByNameUseCase } from './use-cases/get-event-by-name/get-event-by-name.useCase';
 
 @Module({
   controllers: [
     CreateEventController,
     GetEventsByUserIdController,
     GetEventByIdController,
+    GetEventByNameController,
   ],
   providers: [
     PrismaService,
@@ -24,6 +27,7 @@ import { GetEventByIdUseCase } from './use-cases/get-event-by-id/get-event-by-id
     CreateEventUseCase,
     GetEventsByUserIdUseCase,
     GetEventByIdUseCase,
+    GetEventByNameUseCase,
   ],
   exports: [IEventRepository],
 })

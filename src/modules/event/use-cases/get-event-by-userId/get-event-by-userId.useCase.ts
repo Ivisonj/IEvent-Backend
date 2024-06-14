@@ -22,9 +22,8 @@ export class GetEventsByUserIdUseCase {
   ): Promise<GetEventsByUserIdResponse> {
     const eventExists = await this.eventRepository.findByUserId(request.userId);
 
-    if (!eventExists || eventExists.length === 0) {
+    if (!eventExists)
       return left(new GetEventsByUserIdErrors.EventNotExistsError());
-    }
 
     const dtos = eventExists.map((event) => EventMapper.toDTO(event));
     return right(dtos);
