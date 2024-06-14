@@ -54,7 +54,9 @@ export class EventMapper {
     return eventOrError;
   }
 
-  public static async toPersistence(event: Event): Promise<any> {
+  public static async toPersistence(
+    event: Event | Partial<Event>,
+  ): Promise<any> {
     const eventData = {
       userId: event.userId,
       name: event.name,
