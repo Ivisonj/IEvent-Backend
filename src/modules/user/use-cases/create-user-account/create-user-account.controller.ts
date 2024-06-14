@@ -12,7 +12,7 @@ import { CreateUserAccountErrors } from './create-user-account.errors';
 import { CreateUserAccountDTO } from './create-user-account.DTO';
 import { UserDTO } from '../../dtos/user.DTO';
 
-@Controller('create')
+@Controller('api/v1/user/create')
 @ApiTags('User Account')
 export class CreateUserController {
   constructor(private readonly useCase: CreateUserAccountUseCase) {}
