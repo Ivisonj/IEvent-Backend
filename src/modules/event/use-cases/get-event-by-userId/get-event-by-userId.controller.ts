@@ -14,7 +14,7 @@ import {
 import { GetEventsByUserIdErrors } from './get-event-by-userId.errors';
 
 @ApiTags('Event')
-@Controller('event')
+@Controller('api/v1/event/events-by-user-id')
 export class GetEventsByUserIdController {
   constructor(private readonly useCase: GetEventsByUserIdUseCase) {}
 

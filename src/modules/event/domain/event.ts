@@ -6,7 +6,8 @@ interface EventProps {
   address: string;
   isPublic: boolean;
   once: boolean;
-  recurrence?: string[];
+  isActive: boolean;
+  recurrence?: number[];
   custom_rules: boolean;
   absences_limit?: boolean;
   max_absences?: number;
@@ -39,7 +40,11 @@ export class Event extends Entity<EventProps> {
     return this.props.once;
   }
 
-  get recurrence(): string[] | undefined {
+  get isActive(): boolean {
+    return this.props.isActive;
+  }
+
+  get recurrence(): number[] | undefined {
     return this.props.recurrence;
   }
 
