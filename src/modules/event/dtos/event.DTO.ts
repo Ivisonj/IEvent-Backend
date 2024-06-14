@@ -14,7 +14,9 @@ export class EventDTO {
   @ApiProperty()
   once: boolean;
   @ApiProperty()
-  recurrence?: string[];
+  isActive: boolean;
+  @ApiProperty()
+  recurrence?: number[];
   @ApiProperty()
   custom_rules: boolean;
   @ApiProperty()

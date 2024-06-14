@@ -28,6 +28,7 @@ model Event {
   address            String
   isPublic           Boolean
   once               Boolean
+  isActive           Boolean
   custom_rules       Boolean
   absences_limit     Boolean
   max_absences       Int
@@ -44,7 +45,7 @@ model Event {
 model Recurrence {
   id         String  @id @default(uuid()) @db.Uuid
   eventId    String  @db.Uuid
-  day        String
+  day        Int
   recurrence Boolean
   event      Event   @relation(fields: [eventId], references: [id]) 
 }

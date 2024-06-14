@@ -19,7 +19,9 @@ export class GetEventsByUserIdDTOResponse {
   @ApiProperty()
   once: boolean;
   @ApiProperty()
-  recurrence?: string[];
+  isActive: boolean;
+  @ApiProperty()
+  recurrence?: number[];
   @ApiProperty()
   custom_rules: boolean;
   @ApiProperty()

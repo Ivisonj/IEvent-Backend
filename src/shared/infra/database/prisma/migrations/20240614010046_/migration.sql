@@ -16,6 +16,7 @@ CREATE TABLE "Event" (
     "address" TEXT NOT NULL,
     "isPublic" BOOLEAN NOT NULL,
     "once" BOOLEAN NOT NULL,
+    "isActive" BOOLEAN NOT NULL,
     "custom_rules" BOOLEAN NOT NULL,
     "absences_limit" BOOLEAN NOT NULL,
     "max_absences" INTEGER NOT NULL,
@@ -33,7 +34,7 @@ CREATE TABLE "Event" (
 CREATE TABLE "Recurrence" (
     "id" UUID NOT NULL,
     "eventId" UUID NOT NULL,
-    "day" TEXT NOT NULL,
+    "day" INTEGER NOT NULL,
     "recurrence" BOOLEAN NOT NULL,
 
     CONSTRAINT "Recurrence_pkey" PRIMARY KEY ("id")
