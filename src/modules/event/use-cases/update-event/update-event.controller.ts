@@ -26,6 +26,7 @@ export class UpdateEventController {
 
     if (result.isLeft()) {
       const error = result.value;
+      console.log(error);
       if (
         error.constructor === UpdateEventErrors.EventNotExists ||
         error.constructor === UpdateEventErrors.FailUpdateEvent
