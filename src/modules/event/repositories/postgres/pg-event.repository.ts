@@ -72,4 +72,41 @@ export class PgEventRepository implements IEventRepository {
       EventMapper.toDomain(event, event.recurrences),
     );
   }
+
+  async update(id: string, updateData: Partial<Event>): Promise<Event> {
+    const { eventData, recurrencesData } =
+      await EventMapper.toPersistence(updateData);
+
+    const result = await this.prisma.$transaction(async (prisma) => {
+      const updatedEvent = await prisma.event.update({
+        where: { id },
+        data: eventData,
+      });
+
+      if (recurrencesData) {
+        await prisma.recurrence.deleteMany({
+          where: { eventId: id },
+        });
+
+        const updatedRecurrences = await Promise.all(
+          recurrencesData.map((day) =>
+            prisma.recurrence.create({
+              data: {
+                id: uuid(),
+                eventId: updatedEvent.id,
+                day: day.day,
+                recurrence: day.recurrence,
+              },
+            }),
+          ),
+        );
+
+        return { updatedEvent, updatedRecurrences };
+      }
+
+      return { updatedEvent, updatedRecurrences: [] };
+    });
+
+    return EventMapper.toDomain(result.updatedEvent, result.updatedRecurrences);
+  }
 }
