@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Event } from '../../domain/event';
+import { Event } from '../../domain/Event';
 import { IEventRepository } from '../../repositories/event-repository.interface';
 import { Either, right } from 'src/shared/application/Either';
 import { CreateEventDTO } from './create-event.DTO';

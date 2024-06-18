@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import { Event } from '../../domain/event';
+import { Event } from '../../domain/Event';
 import { EventMapper } from '../../mappers/event.map';
 import { IEventRepository } from '../event-repository.interface';
 import { PrismaService } from 'src/shared/infra/database/prisma/prisma-service.module';
@@ -25,7 +25,6 @@ export class PgEventRepository implements IEventRepository {
               id: uuid(),
               eventId: createdEvent.id,
               day: day.day,
-              recurrence: day.recurrence,
             },
           }),
         ),
@@ -73,7 +72,7 @@ export class PgEventRepository implements IEventRepository {
     );
   }
 
-  async update(id: string, updateData: Partial<Event>): Promise<Event> {
+  async update(id: string, updateData: Event): Promise<Event> {
     const { eventData, recurrencesData } =
       await EventMapper.toPersistence(updateData);
 
@@ -95,7 +94,6 @@ export class PgEventRepository implements IEventRepository {
                 id: uuid(),
                 eventId: updatedEvent.id,
                 day: day.day,
-                recurrence: day.recurrence,
               },
             }),
           ),

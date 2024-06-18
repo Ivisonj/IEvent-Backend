@@ -35,7 +35,6 @@ CREATE TABLE "Recurrence" (
     "id" UUID NOT NULL,
     "eventId" UUID NOT NULL,
     "day" INTEGER NOT NULL,
-    "recurrence" BOOLEAN NOT NULL,
 
     CONSTRAINT "Recurrence_pkey" PRIMARY KEY ("id")
 );

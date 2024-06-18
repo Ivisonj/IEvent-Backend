@@ -10,7 +10,7 @@ import { CreateEventUseCase } from './create-event.useCase';
 import { CreateEventDTO } from './create-event.DTO';
 import { EventDTO } from '../../dtos/event.DTO';
 
-@Controller('api/v1/event/create')
+@Controller('api/v1/event/')
 @ApiTags('Create Event')
 export class CreateEventController {
   constructor(private readonly useCase: CreateEventUseCase) {}

@@ -46,6 +46,5 @@ model Recurrence {
   id         String  @id @default(uuid()) @db.Uuid
   eventId    String  @db.Uuid
   day        Int
-  recurrence Boolean
   event      Event   @relation(fields: [eventId], references: [id]) 
 }
