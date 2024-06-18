@@ -1,6 +1,6 @@
 import { Event as EventPrisma } from '@prisma/client';
 import { Recurrence as RecurrencePrisma } from '@prisma/client';
-import { Event } from '../domain/event';
+import { Event } from '../domain/Event';
 import { EventDTO } from '../dtos/event.DTO';
 
 export class EventMapper {
@@ -54,9 +54,7 @@ export class EventMapper {
     return eventOrError;
   }
 
-  public static async toPersistence(
-    event: Event | Partial<Event>,
-  ): Promise<any> {
+  public static async toPersistence(event: Event): Promise<any> {
     const eventData = {
       userId: event.userId,
       name: event.name,
