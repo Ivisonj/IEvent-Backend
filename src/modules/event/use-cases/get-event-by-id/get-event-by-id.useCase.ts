@@ -22,7 +22,8 @@ export class GetEventByIdUseCase {
   ): Promise<GetEventByIdresponse> {
     const eventExists = await this.eventRepository.findById(request.id);
 
-    if (!eventExists) return left(new GetEventByIdError.EventNotExists());
+    if (!eventExists || eventExists.length === 0)
+      return left(new GetEventByIdError.EventNotExists());
 
     const dto = eventExists.map((event) => EventMapper.toDTO(event));
     return right(dto);
