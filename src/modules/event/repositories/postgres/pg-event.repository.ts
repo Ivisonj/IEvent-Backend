@@ -117,4 +117,21 @@ export class PgEventRepository implements IEventRepository {
 
     return EventMapper.toDomain(result.updatedEvent, result.updatedRecurrences);
   }
+
+  async delete(id: string): Promise<void> {
+    const event = await this.prisma.event.findUnique({
+      where: { id },
+      include: { recurrences: true },
+    });
+
+    if (!event.once) {
+      await this.prisma.recurrence.deleteMany({
+        where: { eventId: id },
+      });
+    }
+
+    await this.prisma.event.delete({
+      where: { id },
+    });
+  }
 }
