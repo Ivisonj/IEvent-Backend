@@ -1,9 +1,11 @@
+import { AuthGuard } from 'src/modules/user/use-cases/auth/auth.guard';
 import {
   BadRequestException,
   Controller,
   Get,
+  UseGuards,
+  Req,
   NotFoundException,
-  Param,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { GetEventsByUserIdUseCase } from './get-event-by-userId.useCase';
@@ -22,8 +24,12 @@ export class GetEventsByUserIdController {
     description: 'Get event by user id',
     type: GetEventsByUserIdDTOResponse,
   })
-  @Get(':userId')
-  async getEvent(@Param() dto: GetEventsByUserIdDTO) {
+  @UseGuards(AuthGuard)
+  @Get()
+  async getEvent(@Req() request: GetEventsByUserIdDTO) {
+    const userId = request.userId;
+    const dto = { userId };
+
     const result = await this.useCase.execute(dto);
     if (result.isLeft()) {
       const error = result.value;

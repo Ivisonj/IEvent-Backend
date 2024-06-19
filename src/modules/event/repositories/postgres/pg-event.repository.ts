@@ -9,6 +9,14 @@ import { PrismaService } from 'src/shared/infra/database/prisma/prisma-service.m
 export class PgEventRepository implements IEventRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async exists(id: string): Promise<Event> {
+    const event = await this.prisma.event.findUnique({
+      where: { id },
+      include: { recurrences: true },
+    });
+    return event ? EventMapper.toDomain(event, event.recurrences) : null;
+  }
+
   async create(event: Event): Promise<Event> {
     const { eventData, recurrencesData } =
       await EventMapper.toPersistence(event);
@@ -52,6 +60,8 @@ export class PgEventRepository implements IEventRepository {
       where: { id },
       include: { recurrences: true },
     });
+
+    if (!event) return null;
 
     return event.map((event) => EventMapper.toDomain(event, event.recurrences));
   }

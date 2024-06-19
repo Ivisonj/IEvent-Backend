@@ -18,6 +18,9 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('O token é obrigatório');
     }
     try {
+      const decode = this.jwtService.verify(token);
+      request.userId = decode.sub;
+
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });

@@ -22,7 +22,7 @@ export class UpdateEventController {
   })
   @Put(':id')
   async updateEvent(@Param('id') id: string, @Body() dto: UpdateEventDTO) {
-    const result = await this.useCase.execute({ id, ...dto });
+    const result = await this.useCase.execute(id, dto);
 
     if (result.isLeft()) {
       const error = result.value;
