@@ -15,8 +15,11 @@ export type UpdateEventResponse = Either<
 export class UpdateEventUseCase {
   constructor(private readonly eventRepository: IEventRepository) {}
 
-  public async execute(request: UpdateEventDTO): Promise<UpdateEventResponse> {
-    const eventExists = await this.eventRepository.findById(request.id);
+  public async execute(
+    id: string,
+    request: UpdateEventDTO,
+  ): Promise<UpdateEventResponse> {
+    const eventExists = await this.eventRepository.exists(id);
 
     if (!eventExists) {
       return left(new UpdateEventErrors.EventNotExists());
