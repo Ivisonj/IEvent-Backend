@@ -1,9 +1,12 @@
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/modules/user/use-cases/auth/auth.guard';
 import {
   Body,
   ConflictException,
   Controller,
   Post,
+  UseGuards,
+  Req,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateEventUseCase } from './create-event.useCase';
@@ -18,8 +21,15 @@ export class CreateEventController {
     description: 'create new event',
     type: EventDTO,
   })
+  @UseGuards(AuthGuard)
   @Post('create')
-  async create(@Body(new ValidationPipe()) dto: CreateEventDTO) {
+  async create(
+    @Req() request,
+    @Body(new ValidationPipe()) eventDTO: CreateEventDTO,
+  ) {
+    const userId = request.userId;
+    const dto = { userId, ...eventDTO };
+
     const result = await this.useCase.execute(dto);
     if (result.isLeft()) {
       const error = result.value;

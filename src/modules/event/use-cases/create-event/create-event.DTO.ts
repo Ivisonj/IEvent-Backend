@@ -11,9 +11,7 @@ import {
 
 export class CreateEventDTO {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  userId: string;
+  userId?: string;
 
   @ApiProperty()
   @IsNotEmpty()
