@@ -14,11 +14,13 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid()) @db.Uuid
-  name     String
-  email    String  @unique @db.VarChar(50)
-  password String
-  events   Event[] 
+  id            String  @id @default(uuid()) @db.Uuid
+  name          String
+  email         String  @unique @db.VarChar(50)
+  password      String
+  events        Event[] 
+  participant   Participant[]
+  notification  Notification[]
 }
 
 model Event {
@@ -39,7 +41,9 @@ model Event {
   start_time         DateTime
   end_time           DateTime
   user               User       @relation(fields: [userId], references: [id]) 
-  recurrences        Recurrence[] 
+  recurrence         Recurrence[]
+  participant        Participant[]
+  notification       Notification[] 
 }
 
 model Recurrence {
@@ -47,4 +51,25 @@ model Recurrence {
   eventId    String  @db.Uuid
   day        Int
   event      Event   @relation(fields: [eventId], references: [id]) 
+}
+
+model Participant {
+  id         String  @id @default(uuid()) @db.Uuid
+  userId     String  @db.Uuid
+  eventId    String  @db.Uuid
+  status     String  @default("pending")
+  user       User    @relation(fields: [userId], references: [id])
+  event      Event   @relation(fields: [eventId], references: [id]) 
+}
+
+model Notification {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  eventId    String   @db.Uuid
+  message    String?
+  type       String
+  createdAt  DateTime @default(now())
+  readed     Boolean  @default(false)
+  user       User     @relation(fields: [userId], references: [id])
+  event      Event    @relation(fields: [eventId], references: [id]) 
 }
