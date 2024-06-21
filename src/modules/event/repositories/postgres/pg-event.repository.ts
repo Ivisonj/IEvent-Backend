@@ -12,9 +12,9 @@ export class PgEventRepository implements IEventRepository {
   async exists(id: string): Promise<Event> {
     const event = await this.prisma.event.findUnique({
       where: { id },
-      include: { recurrences: true },
+      include: { recurrence: true },
     });
-    return event ? EventMapper.toDomain(event, event.recurrences) : null;
+    return event ? EventMapper.toDomain(event, event.recurrence) : null;
   }
 
   async create(event: Event): Promise<Event> {
@@ -47,23 +47,21 @@ export class PgEventRepository implements IEventRepository {
   async findByUserId(userId: string): Promise<Event[]> {
     const events = await this.prisma.event.findMany({
       where: { userId },
-      include: { recurrences: true },
+      include: { recurrence: true },
     });
 
-    return events.map((event) =>
-      EventMapper.toDomain(event, event.recurrences),
-    );
+    return events.map((event) => EventMapper.toDomain(event, event.recurrence));
   }
 
   async findById(id: string): Promise<Event[]> {
     const event = await this.prisma.event.findMany({
       where: { id },
-      include: { recurrences: true },
+      include: { recurrence: true },
     });
 
     if (!event) return null;
 
-    return event.map((event) => EventMapper.toDomain(event, event.recurrences));
+    return event.map((event) => EventMapper.toDomain(event, event.recurrence));
   }
 
   async findByName(name: string): Promise<Event[]> {
@@ -74,12 +72,10 @@ export class PgEventRepository implements IEventRepository {
           mode: 'insensitive',
         },
       },
-      include: { recurrences: true },
+      include: { recurrence: true },
     });
 
-    return events.map((event) =>
-      EventMapper.toDomain(event, event.recurrences),
-    );
+    return events.map((event) => EventMapper.toDomain(event, event.recurrence));
   }
 
   async update(id: string, updateData: Event): Promise<Event> {
@@ -121,7 +117,7 @@ export class PgEventRepository implements IEventRepository {
   async delete(id: string): Promise<void> {
     const event = await this.prisma.event.findUnique({
       where: { id },
-      include: { recurrences: true },
+      include: { recurrence: true },
     });
 
     if (!event.once) {
