@@ -20,6 +20,29 @@ export class PgParticipantRepository implements IParticipantRepository {
     return !!result ? UserMapper.toDomain(result) : null;
   }
 
+  async eventExists(id: string): Promise<Event> {
+    const result = await this.prisma.event.findUnique({
+      where: { id },
+      include: { recurrence: true },
+    });
+
+    return !!result ? EventMapper.toDomain(result, result.recurrence) : null;
+  }
+
+  async solicitationExists(
+    userId: string,
+    eventId: string,
+  ): Promise<Participant> {
+    const result = await this.prisma.participant.findFirst({
+      where: {
+        userId,
+        eventId,
+      },
+    });
+
+    return !!result ? ParticipantMapper.toDomain(result) : null;
+  }
+
   async create(participant: Participant): Promise<Participant> {
     const data = ParticipantMapper.toPersistence(participant);
     const result = await this.prisma.participant.create({
