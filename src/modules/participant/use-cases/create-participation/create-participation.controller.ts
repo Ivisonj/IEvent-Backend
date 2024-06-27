@@ -32,7 +32,8 @@ export class CreateParticipantController {
       const error = result.value;
       if (
         error.constructor === CreateParticipantErrors.UserNotExists ||
-        error.constructor === CreateParticipantErrors.EventNotExists
+        error.constructor === CreateParticipantErrors.EventNotExists ||
+        error.constructor === CreateParticipantErrors.FailToSentSolicitation
       ) {
         throw new NotFoundException(error);
       } else {

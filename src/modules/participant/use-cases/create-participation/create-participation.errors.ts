@@ -12,4 +12,10 @@ export namespace CreateParticipantErrors {
       super('Evento não encontrado');
     }
   }
+
+  export class FailToSentSolicitation extends UseCaseError {
+    constructor() {
+      super('Falha ao enviar solicitação');
+    }
+  }
 }

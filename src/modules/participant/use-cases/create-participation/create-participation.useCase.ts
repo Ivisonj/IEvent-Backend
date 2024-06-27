@@ -35,6 +35,12 @@ export class CreateParticipantUseCase {
 
     if (!eventExists) return left(new CreateParticipantErrors.EventNotExists());
 
+    const solicitationExists =
+      await this.participantRepository.solicitationExists(userId, eventId);
+
+    if (solicitationExists)
+      return left(new CreateParticipantErrors.FailToSentSolicitation());
+
     const participantOrError = Participant.create({
       userId: userId,
       eventId: eventId,
