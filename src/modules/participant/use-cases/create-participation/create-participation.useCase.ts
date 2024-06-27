@@ -31,6 +31,10 @@ export class CreateParticipantUseCase {
 
     if (!userExists) return left(new CreateParticipantErrors.UserNotExists());
 
+    const eventExists = await this.participantRepository.eventExists(eventId);
+
+    if (!eventExists) return left(new CreateParticipantErrors.EventNotExists());
+
     const participantOrError = Participant.create({
       userId: userId,
       eventId: eventId,

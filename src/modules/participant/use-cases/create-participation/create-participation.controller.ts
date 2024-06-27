@@ -30,7 +30,10 @@ export class CreateParticipantController {
 
     if (result.isLeft()) {
       const error = result.value;
-      if (error.constructor === CreateParticipantErrors.UserNotExists) {
+      if (
+        error.constructor === CreateParticipantErrors.UserNotExists ||
+        error.constructor === CreateParticipantErrors.EventNotExists
+      ) {
         throw new NotFoundException(error);
       } else {
         throw new BadRequestException(error);

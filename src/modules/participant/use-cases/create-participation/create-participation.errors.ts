@@ -6,4 +6,10 @@ export namespace CreateParticipantErrors {
       super('Usuário não encontrado');
     }
   }
+
+  export class EventNotExists extends UseCaseError {
+    constructor() {
+      super('Evento não encontrado');
+    }
+  }
 }
