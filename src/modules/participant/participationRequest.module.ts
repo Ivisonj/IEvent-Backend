@@ -6,11 +6,14 @@ import { IParticipantRepository } from './repositories/participant-repository.in
 import { PgParticipantRepository } from './repositories/postgres/Pg-participant.repository';
 import { INotificationRepository } from '../notification/repositories/notification-repository.interface';
 import { PgNotificationRepository } from '../notification/repositories/postgres/Pg-notication.repository';
+import { ResponseSolicitationController } from './use-cases/response-solicitation/response-solicitation.controller';
+import { ResponseSolicitationUseCase } from './use-cases/response-solicitation/response-solicitation.useCase';
 @Module({
-  controllers: [CreateParticipantController],
+  controllers: [CreateParticipantController, ResponseSolicitationController],
   providers: [
     PrismaService,
     CreateParticipantUseCase,
+    ResponseSolicitationUseCase,
     {
       provide: IParticipantRepository,
       useClass: PgParticipantRepository,
