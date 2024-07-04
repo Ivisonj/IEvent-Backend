@@ -56,7 +56,7 @@ export class CreateParticipantUseCase {
       eventId: eventId,
       message: 'Você tem uma nova solicitação',
       type: 'solicitation' as NotificationTypes,
-      createdAt: '2024-06-21T00:00:00.000Z',
+      createdAt: new Date(),
       readed: false,
     });
 

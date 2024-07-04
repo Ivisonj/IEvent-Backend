@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Participant } from '../../domain/participant';
+import { Participant, ParticpantStatus } from '../../domain/participant';
 import { ParticipantMapper } from '../../mappers/participant.map';
 import { IParticipantRepository } from '../participant-repository.interface';
 import { PrismaService } from 'src/shared/infra/database/prisma/prisma-service.module';
@@ -11,6 +11,13 @@ import { Event } from 'src/modules/event/domain/Event';
 @Injectable()
 export class PgParticipantRepository implements IParticipantRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async exists(id: string): Promise<Participant | null> {
+    const result = await this.prisma.participant.findUnique({
+      where: { id },
+    });
+    return !!result ? ParticipantMapper.toDomain(result) : null;
+  }
 
   async userExists(id: string): Promise<User> {
     const result = await this.prisma.user.findUnique({
@@ -50,5 +57,24 @@ export class PgParticipantRepository implements IParticipantRepository {
     });
 
     return !!result ? ParticipantMapper.toDomain(result) : null;
+  }
+
+  async updateStatus(
+    id: string,
+    updatedStatus: ParticpantStatus,
+  ): Promise<Participant | null> {
+    if (updatedStatus === ParticpantStatus.rejected) {
+      await this.prisma.participant.delete({
+        where: { id },
+      });
+      return null;
+    } else {
+      const result = await this.prisma.participant.update({
+        where: { id },
+        data: { status: updatedStatus },
+      });
+
+      return !!result ? ParticipantMapper.toDomain(result) : null;
+    }
   }
 }
