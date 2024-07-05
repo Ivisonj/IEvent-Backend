@@ -4,6 +4,9 @@ import { Event } from '../../domain/Event';
 import { EventMapper } from '../../mappers/event.map';
 import { IEventRepository } from '../event-repository.interface';
 import { PrismaService } from 'src/shared/infra/database/prisma/prisma-service.module';
+import { User } from 'src/modules/user/domain/user/user';
+import { UserMapper } from 'src/modules/user/mappers/user.map';
+import { ParticpantStatus } from 'src/modules/participant/domain/participant';
 
 @Injectable()
 export class PgEventRepository implements IEventRepository {
@@ -15,6 +18,14 @@ export class PgEventRepository implements IEventRepository {
       include: { recurrence: true },
     });
     return event ? EventMapper.toDomain(event, event.recurrence) : null;
+  }
+
+  async userExists(id: string): Promise<User | null> {
+    const result = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    return !!result ? UserMapper.toDomain(result) : null;
   }
 
   async create(event: Event): Promise<Event> {
@@ -74,6 +85,26 @@ export class PgEventRepository implements IEventRepository {
       },
       include: { recurrence: true },
     });
+
+    return events.map((event) => EventMapper.toDomain(event, event.recurrence));
+  }
+
+  async findByParticipation(userId: string): Promise<Event[] | null> {
+    const participants = await this.prisma.participant.findMany({
+      where: {
+        userId,
+        status: ParticpantStatus.accepted,
+      },
+      include: {
+        event: {
+          include: {
+            recurrence: true,
+          },
+        },
+      },
+    });
+
+    const events = participants.map((participant) => participant.event);
 
     return events.map((event) => EventMapper.toDomain(event, event.recurrence));
   }
