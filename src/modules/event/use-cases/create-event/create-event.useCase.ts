@@ -26,10 +26,10 @@ export class CreateEventUseCase {
       max_absences: request.max_absences,
       delays_limit: request.delays_limit,
       max_delays: request.max_delays,
-      start_date: request.start_date,
-      end_date: request.end_date,
-      start_time: request.start_time,
-      end_time: request.end_time,
+      start_date: new Date(request.start_date),
+      end_date: new Date(request.end_date),
+      start_time: new Date(request.start_time),
+      end_time: new Date(request.end_time),
     });
 
     const event = await this.eventRepository.create(eventOrError);
