@@ -109,6 +109,47 @@ export class PgEventRepository implements IEventRepository {
     return events.map((event) => EventMapper.toDomain(event, event.recurrence));
   }
 
+  async findByDate(date: string): Promise<Event[] | null> {
+    const dateReceived = new Date(date);
+    const dayOfWeek = dateReceived.getDay();
+    const events = await this.prisma.event.findMany({
+      where: {
+        AND: [
+          {
+            start_date: {
+              lte: dateReceived,
+            },
+          },
+          {
+            end_date: {
+              gte: dateReceived,
+            },
+          },
+        ],
+      },
+      include: {
+        recurrence: true,
+      },
+    });
+
+    const recurringEvents = await this.prisma.event.findMany({
+      where: {
+        recurrence: {
+          some: {
+            day: dayOfWeek,
+          },
+        },
+      },
+      include: { recurrence: true },
+    });
+
+    const allEvents = [...events, ...recurringEvents];
+
+    return allEvents.map((event) =>
+      EventMapper.toDomain(event, event.recurrence),
+    );
+  }
+
   async update(id: string, updateData: Event): Promise<Event> {
     const { eventData, recurrencesData } =
       await EventMapper.toPersistence(updateData);
