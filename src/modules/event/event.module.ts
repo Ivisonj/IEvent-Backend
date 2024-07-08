@@ -16,6 +16,8 @@ import { DeleteEventController } from './use-cases/delete-event/delete-event.con
 import { DeteleEventUseCase } from './use-cases/delete-event/delete-event.useCase';
 import { GetEventByParticipationController } from './use-cases/get-event-participating/get-event-by-participation.controller';
 import { GetEventByParticipationUseCase } from './use-cases/get-event-participating/get-event-by-participation.useCase';
+import { GetEventByDateController } from './use-cases/get-events-by-date/get-events-by-date.controller';
+import { GetEventsByDateUseCase } from './use-cases/get-events-by-date/get-events-by-date.useCase';
 
 @Module({
   controllers: [
@@ -24,6 +26,7 @@ import { GetEventByParticipationUseCase } from './use-cases/get-event-participat
     GetEventByIdController,
     GetEventByNameController,
     GetEventByParticipationController,
+    GetEventByDateController,
     UpdateEventController,
     DeleteEventController,
   ],
@@ -38,6 +41,7 @@ import { GetEventByParticipationUseCase } from './use-cases/get-event-participat
     GetEventByIdUseCase,
     GetEventByNameUseCase,
     GetEventByParticipationUseCase,
+    GetEventsByDateUseCase,
     UpdateEventUseCase,
     DeteleEventUseCase,
   ],
