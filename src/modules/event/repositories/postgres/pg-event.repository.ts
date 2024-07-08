@@ -110,19 +110,28 @@ export class PgEventRepository implements IEventRepository {
   }
 
   async findByDate(date: string): Promise<Event[] | null> {
-    const dateReceived = new Date(date);
-    const dayOfWeek = dateReceived.getDay();
+    const [year, month, day] = date.split('-');
+
+    const formattedDate = new Date(
+      `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T23:59:59.000Z`,
+    );
+
+    const dayOfWeek = formattedDate.getUTCDay();
+
     const events = await this.prisma.event.findMany({
       where: {
         AND: [
           {
-            start_date: {
-              lte: dateReceived,
-            },
+            start_date: { lte: formattedDate },
           },
           {
-            end_date: {
-              gte: dateReceived,
+            end_date: { gte: formattedDate },
+          },
+          {
+            recurrence: {
+              some: {
+                day: dayOfWeek,
+              },
             },
           },
         ],
@@ -132,22 +141,7 @@ export class PgEventRepository implements IEventRepository {
       },
     });
 
-    const recurringEvents = await this.prisma.event.findMany({
-      where: {
-        recurrence: {
-          some: {
-            day: dayOfWeek,
-          },
-        },
-      },
-      include: { recurrence: true },
-    });
-
-    const allEvents = [...events, ...recurringEvents];
-
-    return allEvents.map((event) =>
-      EventMapper.toDomain(event, event.recurrence),
-    );
+    return events.map((event) => EventMapper.toDomain(event, event.recurrence));
   }
 
   async update(id: string, updateData: Event): Promise<Event> {
@@ -203,3 +197,16 @@ export class PgEventRepository implements IEventRepository {
     });
   }
 }
+
+// AND: [
+//   {
+//     start_date: {
+//       lte: dateReceived,
+//     },
+//   },
+//   {
+//     end_date: {
+//       gte: dateReceived,
+//     },
+//   },
+// ],

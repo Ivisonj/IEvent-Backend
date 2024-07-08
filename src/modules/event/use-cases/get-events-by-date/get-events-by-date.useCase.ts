@@ -21,7 +21,7 @@ export class GetEventsByDateUseCase {
   constructor(private readonly eventRepository: IEventRepository) {}
 
   public async execute(date: string): Promise<GetEventsByDateResponse> {
-    if (date < today) return left(new GetEventsByDateErrors.InvalidDate());
+    // if (date < today) return left(new GetEventsByDateErrors.InvalidDate());
 
     const events = await this.eventRepository.findByDate(date);
 
