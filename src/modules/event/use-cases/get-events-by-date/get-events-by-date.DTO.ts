@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export class GetEventsByDateDTO {
+  @ApiProperty()
+  userId: string;
+}
+
 export class GetEventByDateDTOResponse {
   @ApiProperty()
   id: string;

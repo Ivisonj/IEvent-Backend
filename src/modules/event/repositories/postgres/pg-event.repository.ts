@@ -109,12 +109,26 @@ export class PgEventRepository implements IEventRepository {
     return events.map((event) => EventMapper.toDomain(event, event.recurrence));
   }
 
-  async findByDate(date: Date): Promise<Event[] | null> {
+  async findByDate(userId: string, date: Date): Promise<Event[] | null> {
+    const eventsParticipation = await this.prisma.participant.findMany({
+      where: { userId: userId, status: ParticpantStatus.accepted },
+      select: {
+        eventId: true,
+      },
+    });
+
+    const eventIds = eventsParticipation.map(
+      (participant) => participant.eventId,
+    );
+
     const dayOfWeek = date.getUTCDay();
 
     const events = await this.prisma.event.findMany({
       where: {
         AND: [
+          {
+            id: { in: eventIds },
+          },
           {
             start_date: { lte: date },
           },

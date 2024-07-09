@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Either, left, right } from 'src/shared/application/Either';
-import { GetEventByDateDTOResponse } from './get-events-by-date.DTO';
+import {
+  GetEventByDateDTOResponse,
+  GetEventsByDateDTO,
+} from './get-events-by-date.DTO';
 import { GetEventsByDateErrors } from './get-events-by-date.errors';
 import { IEventRepository } from '../../repositories/event-repository.interface';
 import { EventMapper } from '../../mappers/event.map';
@@ -20,7 +23,10 @@ const today = new Date(`${year}-${month}-${day}T23:59:59.000Z`);
 export class GetEventsByDateUseCase {
   constructor(private readonly eventRepository: IEventRepository) {}
 
-  public async execute(date: string): Promise<GetEventsByDateResponse> {
+  public async execute(
+    request: GetEventsByDateDTO,
+    date: string,
+  ): Promise<GetEventsByDateResponse> {
     const [year, month, day] = date.split('-');
 
     const formattedDate = new Date(
@@ -30,7 +36,10 @@ export class GetEventsByDateUseCase {
     if (formattedDate < today)
       return left(new GetEventsByDateErrors.InvalidDate());
 
-    const events = await this.eventRepository.findByDate(formattedDate);
+    const events = await this.eventRepository.findByDate(
+      request.userId,
+      formattedDate,
+    );
 
     if (!events) return right([]);
 
