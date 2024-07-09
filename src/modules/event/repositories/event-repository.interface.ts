@@ -9,7 +9,7 @@ export abstract class IEventRepository {
   abstract findByUserId(userId: string): Promise<Event[] | null>;
   abstract findById(id: string): Promise<Event[] | null>;
   abstract findByName(name: string): Promise<Event[] | null>;
-  abstract findByDate(date: string): Promise<Event[] | null>;
+  abstract findByDate(userId: string, date: Date): Promise<Event[] | null>;
   abstract findByParticipation(userId: string): Promise<Event[] | null>;
   abstract delete(id: string): Promise<void>;
 }

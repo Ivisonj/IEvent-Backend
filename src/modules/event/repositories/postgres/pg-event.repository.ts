@@ -109,20 +109,37 @@ export class PgEventRepository implements IEventRepository {
     return events.map((event) => EventMapper.toDomain(event, event.recurrence));
   }
 
-  async findByDate(date: string): Promise<Event[] | null> {
-    const dateReceived = new Date(date);
-    const dayOfWeek = dateReceived.getDay();
+  async findByDate(userId: string, date: Date): Promise<Event[] | null> {
+    const eventsParticipation = await this.prisma.participant.findMany({
+      where: { userId: userId, status: ParticpantStatus.accepted },
+      select: {
+        eventId: true,
+      },
+    });
+
+    const eventIds = eventsParticipation.map(
+      (participant) => participant.eventId,
+    );
+
+    const dayOfWeek = date.getUTCDay();
+
     const events = await this.prisma.event.findMany({
       where: {
         AND: [
           {
-            start_date: {
-              lte: dateReceived,
-            },
+            id: { in: eventIds },
           },
           {
-            end_date: {
-              gte: dateReceived,
+            start_date: { lte: date },
+          },
+          {
+            end_date: { gte: date },
+          },
+          {
+            recurrence: {
+              some: {
+                day: dayOfWeek,
+              },
             },
           },
         ],
@@ -132,22 +149,7 @@ export class PgEventRepository implements IEventRepository {
       },
     });
 
-    const recurringEvents = await this.prisma.event.findMany({
-      where: {
-        recurrence: {
-          some: {
-            day: dayOfWeek,
-          },
-        },
-      },
-      include: { recurrence: true },
-    });
-
-    const allEvents = [...events, ...recurringEvents];
-
-    return allEvents.map((event) =>
-      EventMapper.toDomain(event, event.recurrence),
-    );
+    return events.map((event) => EventMapper.toDomain(event, event.recurrence));
   }
 
   async update(id: string, updateData: Event): Promise<Event> {
@@ -203,3 +205,16 @@ export class PgEventRepository implements IEventRepository {
     });
   }
 }
+
+// AND: [
+//   {
+//     start_date: {
+//       lte: dateReceived,
+//     },
+//   },
+//   {
+//     end_date: {
+//       gte: dateReceived,
+//     },
+//   },
+// ],
