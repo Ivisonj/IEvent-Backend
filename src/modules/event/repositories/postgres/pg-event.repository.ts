@@ -109,23 +109,17 @@ export class PgEventRepository implements IEventRepository {
     return events.map((event) => EventMapper.toDomain(event, event.recurrence));
   }
 
-  async findByDate(date: string): Promise<Event[] | null> {
-    const [year, month, day] = date.split('-');
-
-    const formattedDate = new Date(
-      `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T23:59:59.000Z`,
-    );
-
-    const dayOfWeek = formattedDate.getUTCDay();
+  async findByDate(date: Date): Promise<Event[] | null> {
+    const dayOfWeek = date.getUTCDay();
 
     const events = await this.prisma.event.findMany({
       where: {
         AND: [
           {
-            start_date: { lte: formattedDate },
+            start_date: { lte: date },
           },
           {
-            end_date: { gte: formattedDate },
+            end_date: { gte: date },
           },
           {
             recurrence: {
