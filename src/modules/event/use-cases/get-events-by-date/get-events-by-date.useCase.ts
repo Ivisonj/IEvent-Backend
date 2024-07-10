@@ -9,15 +9,9 @@ import { IEventRepository } from '../../repositories/event-repository.interface'
 import { EventMapper } from '../../mappers/event.map';
 
 export type GetEventsByDateResponse = Either<
-  GetEventsByDateErrors.InvalidDate | Error,
+  GetEventsByDateErrors.UserNotExists | Error,
   GetEventByDateDTOResponse[]
 >;
-
-const date = new Date();
-const day = String(date.getDate()).padStart(2, '0');
-const month = String(date.getMonth() + 1).padStart(2, '0');
-const year = date.getFullYear();
-const today = new Date(`${year}-${month}-${day}T23:59:59.000Z`);
 
 @Injectable()
 export class GetEventsByDateUseCase {
@@ -33,8 +27,9 @@ export class GetEventsByDateUseCase {
       `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T23:59:59.000Z`,
     );
 
-    if (formattedDate < today)
-      return left(new GetEventsByDateErrors.InvalidDate());
+    const userExists = await this.eventRepository.userExists(request.userId);
+
+    if (!userExists) return left(new GetEventsByDateErrors.UserNotExists());
 
     const events = await this.eventRepository.findByDate(
       request.userId,
