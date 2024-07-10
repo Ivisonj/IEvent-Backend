@@ -37,7 +37,7 @@ export class GetEventByDateController {
     const result = await this.useCase.execute(dto, date);
     if (result.isLeft()) {
       const error = result.value;
-      if (error.constructor === GetEventsByDateErrors.InvalidDate) {
+      if (error.constructor === GetEventsByDateErrors.UserNotExists) {
         throw new NotFoundException(error);
       } else {
         throw new BadRequestException(error);

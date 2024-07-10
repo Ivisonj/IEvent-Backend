@@ -1,9 +1,9 @@
 import { UseCaseError } from 'src/shared/application/use-case.error';
 
 export namespace GetEventsByDateErrors {
-  export class InvalidDate extends UseCaseError {
+  export class UserNotExists extends UseCaseError {
     constructor() {
-      super('Invalid date');
+      super('User not exists');
     }
   }
 }
