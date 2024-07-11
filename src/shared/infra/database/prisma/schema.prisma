@@ -21,6 +21,7 @@ model User {
   events        Event[] 
   participant   Participant[]
   notification  Notification[]
+  attendance    Attendance[]
 }
 
 model Event {
@@ -44,6 +45,8 @@ model Event {
   recurrence         Recurrence[]
   participant        Participant[]
   notification       Notification[] 
+  registerEvents    Register_Events[]
+  attendance         Attendance[] 
 }
 
 model Recurrence {
@@ -72,4 +75,25 @@ model Notification {
   readed     Boolean  @default(false)
   user       User     @relation(fields: [userId], references: [id])
   event      Event    @relation(fields: [eventId], references: [id]) 
+}
+
+model Register_Events {
+  id          String   @id @default(uuid()) @db.Uuid
+  eventId     String   @db.Uuid
+  date        DateTime
+  start_time  DateTime
+  end_time    DateTime?   
+  event       Event    @relation(fields: [eventId], references: [id])
+  attendance  Attendance[]   
+}
+
+model Attendance {
+  id                 String   @id @default(uuid()) @db.Uuid
+  userId             String   @db.Uuid
+  eventId            String   @db.Uuid
+  registerEventsId   String   @db.Uuid
+  status             String      
+  user               User     @relation(fields: [userId], references: [id])    
+  event              Event    @relation(fields: [eventId], references: [id])    
+  registerEvents    Register_Events @relation(fields: [registerEventsId], references: [id])    
 }
