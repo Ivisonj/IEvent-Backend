@@ -36,7 +36,8 @@ export class RegisterEventController {
       if (
         error.constructor === RegisterEventErrors.EventNotExists ||
         RegisterEventErrors.EventCanNotStartToday ||
-        RegisterEventErrors.FailToStartEvent
+        RegisterEventErrors.FailToStartEvent ||
+        RegisterEventErrors.FailSolicitation
       ) {
         throw new ConflictException(error);
       } else {

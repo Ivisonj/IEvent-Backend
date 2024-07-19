@@ -18,4 +18,10 @@ export namespace RegisterEventErrors {
       super('Event can not start today');
     }
   }
+
+  export class FailSolicitation extends UseCaseError {
+    constructor() {
+      super('Fail solicitation');
+    }
+  }
 }

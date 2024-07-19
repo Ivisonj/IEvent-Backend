@@ -3,6 +3,7 @@ import { RegisterEvents } from '../domain/register-events';
 
 export abstract class IRegisterEventsRepository {
   abstract eventExists(eventId: string): Promise<Event | null>;
+  abstract eventStarted(eventId: string): Promise<RegisterEvents | null>;
   abstract isUserEventCreator(
     eventId: string,
     userId: string,

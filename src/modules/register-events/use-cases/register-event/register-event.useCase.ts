@@ -36,6 +36,11 @@ export class RegisterEventUseCase {
     if (!isUserEventCreator)
       return left(new RegisterEventErrors.FailToStartEvent());
 
+    const eventStarted =
+      await this.registerEventRepository.eventStarted(eventId);
+
+    if (eventStarted) return left(new RegisterEventErrors.FailSolicitation());
+
     const currentDate = CustomDate.customHours(new Date());
 
     const eventDateMatch = await this.registerEventRepository.checkDate(

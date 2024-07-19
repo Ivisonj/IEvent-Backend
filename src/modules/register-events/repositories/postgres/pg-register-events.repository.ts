@@ -19,6 +19,14 @@ export class PgRegisterEventsRepository implements IRegisterEventsRepository {
     return !!result ? EventMapper.toDomain(result, result.recurrence) : null;
   }
 
+  async eventStarted(eventId: string): Promise<RegisterEvents | null> {
+    const result = await this.prisma.register_Events.findFirst({
+      where: { eventId: eventId },
+    });
+
+    return !!result ? RegisterEventsMapper.toDomain(result) : null;
+  }
+
   async isUserEventCreator(
     eventId: string,
     userId: string,
