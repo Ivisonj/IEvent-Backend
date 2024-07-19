@@ -10,17 +10,30 @@ import { EventMapper } from 'src/modules/event/mappers/event.map';
 export class PgRegisterEventsRepository implements IRegisterEventsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async eventExists(id: string): Promise<Event | null> {
-    const event = await this.prisma.event.findUnique({
-      where: { id },
+  async eventExists(eventId: string): Promise<Event | null> {
+    const result = await this.prisma.event.findUnique({
+      where: { id: eventId },
       include: { recurrence: true },
     });
-    return event ? EventMapper.toDomain(event, event.recurrence) : null;
+
+    return !!result ? EventMapper.toDomain(result, result.recurrence) : null;
   }
 
-  async checkDate(id: string, date: Date): Promise<boolean | null> {
+  async isUserEventCreator(
+    eventId: string,
+    userId: string,
+  ): Promise<boolean | null> {
     const event = await this.prisma.event.findUnique({
-      where: { id },
+      where: { id: eventId },
+      include: { recurrence: true },
+    });
+
+    return event ? event.userId === userId : null;
+  }
+
+  async checkDate(eventId: string, date: Date): Promise<boolean | null> {
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
       include: { recurrence: true },
     });
 
@@ -35,7 +48,7 @@ export class PgRegisterEventsRepository implements IRegisterEventsRepository {
       return eventDateMatch;
     } else {
       const startDate = new Date(event.start_date);
-      return date === startDate;
+      return date.getTime() === startDate.getTime();
     }
   }
 

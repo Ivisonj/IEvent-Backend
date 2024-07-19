@@ -6,6 +6,7 @@ import { RegisterEventDTORequest } from './register-event.DTO';
 import { RegisterEventErrors } from './register-event.errors';
 import { RegisterEventsMapper } from '../../mappers/register-events.map';
 import { RegisterEventsDTO } from '../../dtos/register-events.DTO';
+import { CustomDate } from 'src/shared/application/customDate';
 
 export type RegisterEventResponse = Either<
   RegisterEventErrors.EventNotExists | Error,
@@ -19,29 +20,37 @@ export class RegisterEventUseCase {
   ) {}
 
   public async execute(
-    request: RegisterEventDTORequest,
+    eventId: string,
+    userId: RegisterEventDTORequest,
   ): Promise<RegisterEventResponse> {
-    const eventExists = await this.registerEventRepository.eventExists(
-      request.id,
-    );
+    const eventExists = await this.registerEventRepository.eventExists(eventId);
 
     if (!eventExists) return left(new RegisterEventErrors.EventNotExists());
 
-    const date = new Date();
+    const isUserEventCreator =
+      await this.registerEventRepository.isUserEventCreator(
+        eventId,
+        userId.userId,
+      );
+
+    if (!isUserEventCreator)
+      return left(new RegisterEventErrors.FailToStartEvent());
+
+    const currentDate = CustomDate.customHours(new Date());
 
     const eventDateMatch = await this.registerEventRepository.checkDate(
-      request.id,
-      date,
+      eventId,
+      currentDate,
     );
 
     if (!eventDateMatch)
-      return left(new RegisterEventErrors.EventCanNotStart());
+      return left(new RegisterEventErrors.EventCanNotStartToday());
 
     const registerEventOrError = RegisterEvents.create({
-      eventId: request.id,
-      date: date,
+      eventId: eventId,
+      date: currentDate,
       start_time: new Date(),
-      end_time: undefined,
+      end_time: null,
     });
 
     const event =

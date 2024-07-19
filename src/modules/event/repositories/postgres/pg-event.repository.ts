@@ -205,16 +205,3 @@ export class PgEventRepository implements IEventRepository {
     });
   }
 }
-
-// AND: [
-//   {
-//     start_date: {
-//       lte: dateReceived,
-//     },
-//   },
-//   {
-//     end_date: {
-//       gte: dateReceived,
-//     },
-//   },
-// ],
