@@ -63,14 +63,14 @@ CREATE TABLE "Notification" (
 );
 
 -- CreateTable
-CREATE TABLE "Completed_Events" (
+CREATE TABLE "Register_Events" (
     "id" UUID NOT NULL,
     "eventId" UUID NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "start_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3),
 
-    CONSTRAINT "Completed_Events_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Register_Events_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -78,7 +78,7 @@ CREATE TABLE "Attendance" (
     "id" UUID NOT NULL,
     "userId" UUID NOT NULL,
     "eventId" UUID NOT NULL,
-    "completedEventsId" UUID NOT NULL,
+    "registerEventsId" UUID NOT NULL,
     "status" TEXT NOT NULL,
 
     CONSTRAINT "Attendance_pkey" PRIMARY KEY ("id")
@@ -106,7 +106,7 @@ ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Completed_Events" ADD CONSTRAINT "Completed_Events_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Register_Events" ADD CONSTRAINT "Register_Events_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -115,4 +115,4 @@ ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_userId_fkey" FOREIGN KEY ("u
 ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_completedEventsId_fkey" FOREIGN KEY ("completedEventsId") REFERENCES "Completed_Events"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_registerEventsId_fkey" FOREIGN KEY ("registerEventsId") REFERENCES "Register_Events"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -7,9 +7,21 @@ export namespace RegisterEventErrors {
     }
   }
 
-  export class EventCanNotStart extends UseCaseError {
+  export class FailToStartEvent extends UseCaseError {
     constructor() {
-      super('Event can not Start');
+      super('Fail to start event');
+    }
+  }
+
+  export class EventCanNotStartToday extends UseCaseError {
+    constructor() {
+      super('Event can not start today');
+    }
+  }
+
+  export class FailSolicitation extends UseCaseError {
+    constructor() {
+      super('Fail solicitation');
     }
   }
 }
