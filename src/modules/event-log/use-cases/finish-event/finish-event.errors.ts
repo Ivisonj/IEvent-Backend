@@ -1,9 +1,21 @@
 import { UseCaseError } from 'src/shared/application/use-case.error';
 
 export namespace FinishEventErrors {
+  export class RegisterNotFound extends UseCaseError {
+    constructor() {
+      super('Register not found');
+    }
+  }
+
   export class FailToFinishEvent extends UseCaseError {
     constructor() {
       super('Fail to finish event');
+    }
+  }
+
+  export class FailToStartEvent extends UseCaseError {
+    constructor() {
+      super('Fail to start event');
     }
   }
 }
