@@ -1,6 +1,6 @@
 import { UseCaseError } from 'src/shared/application/use-case.error';
 
-export namespace RegisterEventErrors {
+export namespace EventLogErrors {
   export class EventNotExists extends UseCaseError {
     constructor() {
       super('Event not exists');

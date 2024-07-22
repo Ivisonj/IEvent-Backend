@@ -6,7 +6,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/user/use-cases/auth/auth.module';
 import { EventModule } from './modules/event/event.module';
 import { ParticipantModule } from './modules/participant/participationRequest.module';
-import { RegisterEventModule } from './modules/register-events/register-events.module';
+import { EventLogModule } from './modules/event-log/event-log.module';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { RegisterEventModule } from './modules/register-events/register-events.m
     AuthModule,
     EventModule,
     ParticipantModule,
-    RegisterEventModule,
+    EventLogModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
