@@ -68,4 +68,13 @@ export class PgEventLogRepository implements IEventLogRepository {
 
     return !!result ? EventLogMapper.toDomain(result) : null;
   }
+
+  async endEvent(registerId: string, time): Promise<EventLog | null> {
+    const result = await this.prisma.register_Events.update({
+      where: { id: registerId },
+      data: { end_time: time },
+    });
+
+    return !!result ? EventLogMapper.toDomain(result) : null;
+  }
 }

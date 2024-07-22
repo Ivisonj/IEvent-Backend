@@ -3,13 +3,13 @@ import { Either, left, right } from 'src/shared/application/Either';
 import { EventLog } from '../../domain/event-log';
 import { IEventLogRepository } from '../../repositories/event-log-repository.interface';
 import { StartEventDTORequest } from './start-event.DTO';
-import { EventLogErrors } from './start-event.errors';
+import { StartEventErrors } from './start-event.errors';
 import { EventLogMapper } from '../../mappers/eventLog.map';
 import { EventLogDTO } from '../../dtos/event-log.DTO';
 import { CustomDate } from 'src/shared/application/customDate';
 
-export type EventLogResponse = Either<
-  EventLogErrors.EventNotExists | Error,
+export type StartEventResponse = Either<
+  StartEventErrors.EventNotExists | Error,
   EventLogDTO
 >;
 
@@ -20,21 +20,22 @@ export class StartEventUseCase {
   public async execute(
     eventId: string,
     userId: StartEventDTORequest,
-  ): Promise<EventLogResponse> {
+  ): Promise<StartEventResponse> {
     const eventExists = await this.eventLogRepository.eventExists(eventId);
 
-    if (!eventExists) return left(new EventLogErrors.EventNotExists());
+    if (!eventExists) return left(new StartEventErrors.EventNotExists());
 
     const isUserEventCreator = await this.eventLogRepository.isUserEventCreator(
       eventId,
       userId.userId,
     );
 
-    if (!isUserEventCreator) return left(new EventLogErrors.FailToStartEvent());
+    if (!isUserEventCreator)
+      return left(new StartEventErrors.FailToStartEvent());
 
     const eventStarted = await this.eventLogRepository.eventStarted(eventId);
 
-    if (eventStarted) return left(new EventLogErrors.FailSolicitation());
+    if (eventStarted) return left(new StartEventErrors.FailSolicitation());
 
     const currentDate = CustomDate.customHours(new Date());
 
@@ -44,7 +45,7 @@ export class StartEventUseCase {
     );
 
     if (!eventDateMatch)
-      return left(new EventLogErrors.EventCanNotStartToday());
+      return left(new StartEventErrors.EventCanNotStartToday());
 
     const registerEventOrError = EventLog.create({
       eventId: eventId,

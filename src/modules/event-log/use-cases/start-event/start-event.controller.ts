@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { StartEventUseCase } from './start-event.useCase';
-import { EventLogErrors } from './start-event.errors';
+import { StartEventErrors } from './start-event.errors';
 import { EventLogDTO } from '../../dtos/event-log.DTO';
 import { StartEventDTORequest } from './start-event.DTO';
 import { AuthGuard } from 'src/modules/user/use-cases/auth/auth.guard';
@@ -24,16 +24,16 @@ export class StartEventController {
     type: EventLogDTO,
   })
   @UseGuards(AuthGuard)
-  @Post(':id')
+  @Post(':eventId')
   async startEvent(
     @Req() request: StartEventDTORequest,
-    @Param('id') eventId: string,
+    @Param('eventId') eventId: string,
   ) {
     const userId = request.userId;
     const result = await this.useCase.execute(eventId, { userId });
     if (result.isLeft()) {
       const error = result.value;
-      if (error.constructor === EventLogErrors.EventNotExists) {
+      if (error.constructor === StartEventErrors.EventNotExists) {
         throw new ConflictException(error);
       } else {
         throw new BadRequestException(error);
