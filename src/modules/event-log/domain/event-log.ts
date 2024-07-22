@@ -1,13 +1,13 @@
 import { Entity } from 'src/shared/application/domain/Entity';
 
-interface RegisterEventsProps {
+interface EventLogProps {
   eventId: string;
   date: string | Date;
   start_time: string | Date;
   end_time?: string | Date;
 }
 
-export class RegisterEvents extends Entity<RegisterEventsProps> {
+export class EventLog extends Entity<EventLogProps> {
   get eventId(): string {
     return this.props.eventId;
   }
@@ -24,15 +24,12 @@ export class RegisterEvents extends Entity<RegisterEventsProps> {
     return this.props.end_time;
   }
 
-  constructor(props: RegisterEventsProps, id?: string) {
+  constructor(props: EventLogProps, id?: string) {
     super(props, id);
   }
 
-  public static create(
-    props: RegisterEventsProps,
-    id?: string,
-  ): RegisterEvents {
-    const registerEvents = new RegisterEvents({ ...props }, id);
-    return registerEvents;
+  public static create(props: EventLogProps, id?: string): EventLog {
+    const eventLog = new EventLog({ ...props }, id);
+    return eventLog;
   }
 }

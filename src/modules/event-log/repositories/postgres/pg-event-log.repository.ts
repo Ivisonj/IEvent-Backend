@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterEvents } from '../../domain/register-events';
-import { RegisterEventsMapper } from '../../mappers/register-events.map';
-import { IRegisterEventsRepository } from '../register-events-repository.interface';
+import { EventLog } from '../../domain/event-log';
+import { EventLogMapper } from '../../mappers/eventLog.map';
+import { IEventLogRepository } from '../event-log-repository.interface';
 import { PrismaService } from 'src/shared/infra/database/prisma/prisma-service.module';
 import { Event } from 'src/modules/event/domain/Event';
 import { EventMapper } from 'src/modules/event/mappers/event.map';
 
 @Injectable()
-export class PgRegisterEventsRepository implements IRegisterEventsRepository {
+export class PgEventLogRepository implements IEventLogRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async eventExists(eventId: string): Promise<Event | null> {
@@ -19,12 +19,12 @@ export class PgRegisterEventsRepository implements IRegisterEventsRepository {
     return !!result ? EventMapper.toDomain(result, result.recurrence) : null;
   }
 
-  async eventStarted(eventId: string): Promise<RegisterEvents | null> {
+  async eventStarted(eventId: string): Promise<EventLog | null> {
     const result = await this.prisma.register_Events.findFirst({
       where: { eventId: eventId },
     });
 
-    return !!result ? RegisterEventsMapper.toDomain(result) : null;
+    return !!result ? EventLogMapper.toDomain(result) : null;
   }
 
   async isUserEventCreator(
@@ -60,12 +60,12 @@ export class PgRegisterEventsRepository implements IRegisterEventsRepository {
     }
   }
 
-  async create(event: RegisterEvents): Promise<RegisterEvents | null> {
-    const data = await RegisterEventsMapper.toPersistence(event);
+  async create(event: EventLog): Promise<EventLog | null> {
+    const data = await EventLogMapper.toPersistence(event);
     const result = await this.prisma.register_Events.create({
       data,
     });
 
-    return !!result ? RegisterEventsMapper.toDomain(result) : null;
+    return !!result ? EventLogMapper.toDomain(result) : null;
   }
 }
