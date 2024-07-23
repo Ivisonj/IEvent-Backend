@@ -39,7 +39,7 @@ export class CreateEventUseCase {
       address: request.address,
       isPublic: request.isPublic,
       once: request.once,
-      isActive: request.isActive,
+      isActive: true,
       recurrence: request.recurrence,
       custom_rules: request.custom_rules,
       absences_limit: request.absences_limit,

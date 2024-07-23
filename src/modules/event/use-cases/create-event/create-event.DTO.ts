@@ -37,11 +37,6 @@ export class CreateEventDTO {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsBoolean()
-  isActive: boolean;
-
-  @ApiProperty()
-  @IsNotEmpty()
   @IsArray()
   recurrence?: number[];
 
