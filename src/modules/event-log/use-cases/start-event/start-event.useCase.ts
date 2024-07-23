@@ -50,7 +50,7 @@ export class StartEventUseCase {
     const registerEventOrError = EventLog.create({
       eventId: eventId,
       date: currentDate,
-      start_time: new Date(),
+      start_time: CustomDate.fixTimezoneoffset(new Date()),
       end_time: null,
     });
 
