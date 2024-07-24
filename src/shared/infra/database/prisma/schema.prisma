@@ -92,6 +92,7 @@ model Attendance {
   userId             String   @db.Uuid
   eventId            String   @db.Uuid
   registerEventsId   String   @db.Uuid
+  checkedInAt        DateTime
   status             String      
   user               User     @relation(fields: [userId], references: [id])    
   event              Event    @relation(fields: [eventId], references: [id])    

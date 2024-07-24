@@ -4,4 +4,9 @@ export class CustomDate {
     const utcDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
     return utcDate;
   }
+
+  public static fixTimezoneoffset(date: Date): Date {
+    const utcDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return utcDate;
+  }
 }

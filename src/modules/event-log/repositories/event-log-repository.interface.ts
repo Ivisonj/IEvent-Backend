@@ -2,10 +2,11 @@ import { Event } from 'src/modules/event/domain/Event';
 import { EventLog } from '../domain/event-log';
 
 export abstract class IEventLogRepository {
-  abstract exists(registerId: string): Promise<EventLog | null>;
+  abstract registerExists(registerId: string): Promise<EventLog | null>;
   abstract eventExists(eventId: string): Promise<Event | null>;
   abstract create(event: EventLog): Promise<EventLog | null>;
   abstract eventStarted(eventId: string): Promise<EventLog | null>;
+  abstract eventFinished(registerId: string): Promise<EventLog | null>;
   abstract isUserEventCreator(
     eventId: string,
     userId: string,

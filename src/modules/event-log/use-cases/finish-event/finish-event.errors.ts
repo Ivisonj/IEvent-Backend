@@ -18,4 +18,10 @@ export namespace FinishEventErrors {
       super('Fail to start event');
     }
   }
+
+  export class EventAlreadyFinished extends UseCaseError {
+    constructor() {
+      super('Event already finished');
+    }
+  }
 }

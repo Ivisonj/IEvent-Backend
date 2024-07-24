@@ -5,6 +5,7 @@ import { UserIdDTO, EventIdDTO } from './finish-event.DTO';
 import { FinishEventErrors } from './finish-event.errors';
 import { EventLogMapper } from '../../mappers/eventLog.map';
 import { EventLogDTO } from '../../dtos/event-log.DTO';
+import { CustomDate } from 'src/shared/application/customDate';
 
 export type FinishEventResponse = Either<
   FinishEventErrors.FailToFinishEvent | Error,
@@ -20,11 +21,16 @@ export class FinishEventUseCase {
     eventId: EventIdDTO,
     userId: UserIdDTO,
   ): Promise<FinishEventResponse> {
-    const eventStarted = await this.eventLogRepository.exists(registerId);
+    const registerExists =
+      await this.eventLogRepository.registerExists(registerId);
 
-    if (!eventStarted) return left(new FinishEventErrors.RegisterNotFound());
+    if (!registerExists) return left(new FinishEventErrors.RegisterNotFound());
 
-    console.log('eventId userCase', eventId.eventId);
+    const eventFinished =
+      await this.eventLogRepository.eventFinished(registerId);
+
+    if (!eventFinished)
+      return left(new FinishEventErrors.EventAlreadyFinished());
 
     const isUserEventCreator = await this.eventLogRepository.isUserEventCreator(
       eventId.eventId,
@@ -34,7 +40,7 @@ export class FinishEventUseCase {
     if (!isUserEventCreator)
       return left(new FinishEventErrors.FailToFinishEvent());
 
-    const endTime = new Date();
+    const endTime = CustomDate.fixTimezoneoffset(new Date());
 
     const eventEnded = await this.eventLogRepository.endEvent(
       registerId,

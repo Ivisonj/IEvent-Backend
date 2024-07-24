@@ -10,7 +10,7 @@ import { EventMapper } from 'src/modules/event/mappers/event.map';
 export class PgEventLogRepository implements IEventLogRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async exists(registerId: string): Promise<EventLog | null> {
+  async registerExists(registerId: string): Promise<EventLog | null> {
     const result = await this.prisma.register_Events.findUnique({
       where: { id: registerId },
     });
@@ -40,11 +40,18 @@ export class PgEventLogRepository implements IEventLogRepository {
     return !!result ? EventLogMapper.toDomain(result) : null;
   }
 
+  async eventFinished(registerId: string): Promise<EventLog | null> {
+    const result = await this.prisma.register_Events.findUnique({
+      where: { id: registerId, AND: { end_time: null } },
+    });
+
+    return !!result ? EventLogMapper.toDomain(result) : null;
+  }
+
   async isUserEventCreator(
     eventId: string,
     userId: string,
   ): Promise<boolean | null> {
-    console.log('eventId', eventId);
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
       include: { recurrence: true },
