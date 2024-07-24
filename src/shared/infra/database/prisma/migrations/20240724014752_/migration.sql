@@ -79,6 +79,7 @@ CREATE TABLE "Attendance" (
     "userId" UUID NOT NULL,
     "eventId" UUID NOT NULL,
     "registerEventsId" UUID NOT NULL,
+    "checkedInAt" TIMESTAMP(3) NOT NULL,
     "status" TEXT NOT NULL,
 
     CONSTRAINT "Attendance_pkey" PRIMARY KEY ("id")
