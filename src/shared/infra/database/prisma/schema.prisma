@@ -28,15 +28,15 @@ model Event {
   id                 String     @id @default(uuid()) @db.Uuid
   userId             String     @db.Uuid
   name               String
+  description        String
   address            String
   isPublic           Boolean
   once               Boolean
   isActive           Boolean
   custom_rules       Boolean
-  absences_limit     Boolean
-  max_absences       Int
-  delays_limit       Boolean
-  max_delays         Int
+  tolerance_time     Int?
+  absences_limit     Int?
+  delays_limit       Int?
   start_date         DateTime
   end_date           DateTime
   start_time         DateTime

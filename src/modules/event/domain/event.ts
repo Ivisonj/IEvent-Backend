@@ -3,16 +3,16 @@ import { Entity } from 'src/shared/application/domain/Entity';
 interface EventProps {
   userId: string;
   name: string;
+  description: string;
   address: string;
   isPublic: boolean;
   once: boolean;
   isActive: boolean;
   recurrence?: number[];
   custom_rules: boolean;
-  absences_limit?: boolean;
-  max_absences?: number;
-  delays_limit?: boolean;
-  max_delays?: number;
+  tolerance_time?: number;
+  absences_limit?: number;
+  delays_limit?: number;
   start_date: string | Date;
   end_date: string | Date;
   start_time: string | Date;
@@ -26,6 +26,10 @@ export class Event extends Entity<EventProps> {
 
   get name(): string {
     return this.props.name;
+  }
+
+  get description(): string {
+    return this.props.description;
   }
 
   get address(): string {
@@ -52,20 +56,16 @@ export class Event extends Entity<EventProps> {
     return this.props.custom_rules;
   }
 
-  get absences_limit(): boolean | undefined {
+  get tolerance_time(): number | undefined {
+    return this.props.tolerance_time;
+  }
+
+  get absences_limit(): number | undefined {
     return this.props.absences_limit;
   }
 
-  get max_absences(): number | undefined {
-    return this.props.max_absences;
-  }
-
-  get delays_limit(): boolean | undefined {
+  get delays_limit(): number | undefined {
     return this.props.delays_limit;
-  }
-
-  get max_delays(): number | undefined {
-    return this.props.max_delays;
   }
 
   get start_date(): string | Date {

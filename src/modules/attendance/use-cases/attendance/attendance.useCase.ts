@@ -42,9 +42,9 @@ export class AttendanceUseCase {
 
     if (event.custom_rules) {
       const startTime = new Date(eventStartTime);
-      startTime.getMinutes();
       const checkedInAt = CustomDate.fixTimezoneoffset(new Date());
-      checkedInAt.getMinutes();
+
+      // const userStatus = checkedInAt.getMinutes() - startTime.getMinutes() <= event
     } else {
       const attendanceOrError = Attendance.create({
         userId: request.userId,
