@@ -42,7 +42,7 @@ export class PgAttendanceRepository implements IAttendanceRepository {
 
   async registerExists(registerId: string): Promise<EventLog | null> {
     const register = await this.prisma.register_Events.findUnique({
-      where: { id: registerId },
+      where: { id: registerId, AND: { end_time: null } },
     });
     return !!register ? EventLogMapper.toDomain(register) : null;
   }
