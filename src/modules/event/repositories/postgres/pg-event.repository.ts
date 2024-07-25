@@ -37,19 +37,23 @@ export class PgEventRepository implements IEventRepository {
         data: eventData,
       });
 
-      const recurrences = await Promise.all(
-        recurrencesData.map((day) =>
-          prisma.recurrence.create({
-            data: {
-              id: uuid(),
-              eventId: createdEvent.id,
-              day: day.day,
-            },
-          }),
-        ),
-      );
+      if (recurrencesData.length > 0) {
+        const recurrences = await Promise.all(
+          recurrencesData.map((day) =>
+            prisma.recurrence.create({
+              data: {
+                id: uuid(),
+                eventId: createdEvent.id,
+                day: day.day,
+              },
+            }),
+          ),
+        );
 
-      return { createdEvent, recurrences };
+        return { createdEvent, recurrences };
+      }
+
+      return { createdEvent, recurrences: [] };
     });
 
     return EventMapper.toDomain(result.createdEvent, result.recurrences);

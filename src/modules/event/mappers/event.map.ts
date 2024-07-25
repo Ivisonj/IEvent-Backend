@@ -63,7 +63,6 @@ export class EventMapper {
       isPublic: event.isPublic,
       once: event.once,
       isActive: event.isActive,
-      recurrence: event.recurrence,
       custom_rules: event.custom_rules,
       tolerance_time: event.tolerance_time,
       absences_limit: event.absences_limit,
@@ -75,9 +74,11 @@ export class EventMapper {
     };
 
     const recurrencesData =
-      event.recurrence?.map((day) => ({
-        day,
-      })) || [];
+      event.recurrence && event.recurrence.length > 0
+        ? event.recurrence.map((day) => ({
+            day,
+          }))
+        : [];
 
     return { eventData, recurrencesData };
   }

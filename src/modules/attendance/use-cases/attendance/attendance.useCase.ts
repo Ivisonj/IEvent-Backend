@@ -44,7 +44,24 @@ export class AttendanceUseCase {
       const startTime = new Date(eventStartTime);
       const checkedInAt = CustomDate.fixTimezoneoffset(new Date());
 
-      // const userStatus = checkedInAt.getMinutes() - startTime.getMinutes() <= event
+      const userStatus =
+        checkedInAt.getMinutes() - startTime.getMinutes() <=
+        event.tolerance_time
+          ? AttendanceStatus.presence
+          : AttendanceStatus.delay;
+
+      const attendanceOrError = Attendance.create({
+        userId: request.userId,
+        eventId: request.eventId,
+        registerEventsId: request.registerEventsId,
+        checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
+        status: userStatus,
+      });
+
+      const attendance =
+        await this.attendanceRepository.create(attendanceOrError);
+      const dto = AttendanceMapper.toDTO(attendance);
+      return right(dto);
     } else {
       const attendanceOrError = Attendance.create({
         userId: request.userId,

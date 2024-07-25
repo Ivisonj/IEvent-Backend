@@ -18,7 +18,7 @@ import { AttendanceDTO } from '../../dtos/attendence.DTO';
 export class AttendanceController {
   constructor(private readonly useCase: AttendanceUseCase) {}
   @ApiCreatedResponse({
-    description: '',
+    description: 'Create user attendance',
     type: AttendanceDTO,
   })
   @Post()
