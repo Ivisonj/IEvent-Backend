@@ -10,4 +10,10 @@ export class CreateParticipantDTOResponse {
   eventId: string;
   @ApiProperty()
   status: ParticpantStatus;
+  @ApiProperty()
+  presenceCount?: number;
+  @ApiProperty()
+  lateCount?: number;
+  @ApiProperty()
+  absenceCount?: number;
 }
