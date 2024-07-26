@@ -15,4 +15,8 @@ export abstract class IParticipantRepository {
     id: string,
     updatedStatus: ParticpantStatus,
   ): Promise<Participant | null>;
+  abstract findParticipants(
+    eventId: string,
+    userId: string,
+  ): Promise<Participant | null>;
 }
