@@ -89,14 +89,16 @@ export class PgParticipantRepository implements IParticipantRepository {
   async findParticipants(
     eventId: string,
     userId: string,
-  ): Promise<Participant | null> {
-    const participant = await this.prisma.participant.findFirst({
+  ): Promise<Participant[] | null> {
+    const participants = await this.prisma.participant.findMany({
       where: {
         eventId: eventId,
         userId: userId,
         AND: { status: ParticpantStatus.accepted },
       },
     });
-    return !!participant ? ParticipantMapper.toDomain(participant) : null;
+    return participants.map((participant) =>
+      ParticipantMapper.toDomain(participant),
+    );
   }
 }

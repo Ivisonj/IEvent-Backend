@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { GetParticipantsUseCase } from './get-participants.useCase';
 import {
-  GetParticipantsDTORequest,
+  GetParticipantsHeaderDataDTO,
   GetParticipantsDTOResponse,
 } from './get-participants.DTO';
 import { GetParticipantsErrors } from './get-participants.errors';
@@ -25,12 +25,11 @@ export class GetParticipantsController {
   })
   @Get(':eventId')
   async getParticipants(
-    @Param('eventId') dto: GetParticipantsDTORequest,
-    @Req() request: GetParticipantsDTORequest,
+    @Param('eventId') eventId: string,
+    @Req() request: GetParticipantsHeaderDataDTO,
   ) {
     const userId = request.userId;
-    dto.userId = userId;
-    const result = await this.useCase.execute(dto);
+    const result = await this.useCase.execute(eventId, { userId });
     if (result.isLeft()) {
       const error = result.value;
       if (error.constructor === GetParticipantsErrors.UserOrEventNotMatch) {

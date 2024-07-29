@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Either, left, right } from 'src/shared/application/Either';
 import {
   GetParticipantsDTOResponse,
-  GetParticipantsDTORequest,
+  GetParticipantsHeaderDataDTO,
 } from './get-participants.DTO';
 import { GetParticipantsErrors } from './get-participants.errors';
 import { ParticipantMapper } from '../../mappers/participant.map';
@@ -10,7 +10,7 @@ import { IParticipantRepository } from '../../repositories/participant-repositor
 
 export type GetParticipantsResponse = Either<
   GetParticipantsErrors.UserOrEventNotMatch | Error,
-  GetParticipantsDTOResponse
+  GetParticipantsDTOResponse[]
 >;
 
 @Injectable()
@@ -18,17 +18,20 @@ export class GetParticipantsUseCase {
   constructor(private readonly participantRepository: IParticipantRepository) {}
 
   public async execute(
-    request: GetParticipantsDTORequest,
+    eventId: string,
+    headerData: GetParticipantsHeaderDataDTO,
   ): Promise<GetParticipantsResponse> {
     const participants = await this.participantRepository.findParticipants(
-      request.eventId,
-      request.userId,
+      eventId,
+      headerData.userId,
     );
 
     if (!participants)
       return left(new GetParticipantsErrors.UserOrEventNotMatch());
 
-    const dto = ParticipantMapper.toDTO(participants);
+    const dto = participants.map((participant) =>
+      ParticipantMapper.toDTO(participant),
+    );
     return right(dto);
   }
 }
