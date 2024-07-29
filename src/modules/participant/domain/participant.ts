@@ -16,19 +16,26 @@ interface ParticipantProps {
 }
 
 export class Participant extends Entity<ParticipantProps> {
-  status: ParticpantStatus;
   get userId(): string {
     return this.props.userId;
   }
+
   get eventId(): string {
     return this.props.eventId;
   }
+
+  get status(): ParticpantStatus {
+    return this.props.status;
+  }
+
   get presenceCount(): number {
     return this.props.presenceCount;
   }
+
   get lateCount(): number {
     return this.props.lateCount;
   }
+
   get absenceCount(): number {
     return this.props.absenceCount;
   }

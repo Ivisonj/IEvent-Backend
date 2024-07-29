@@ -45,9 +45,9 @@ export class CreateParticipantUseCase {
       userId: userId,
       eventId: eventId,
       status: ParticpantStatus.pending,
-      presenceCount: null,
-      lateCount: null,
-      absenceCount: null,
+      presenceCount: 0,
+      lateCount: 0,
+      absenceCount: 0,
     });
 
     const participationRequest =

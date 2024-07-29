@@ -5,14 +5,20 @@ import {
   NotFoundException,
   Param,
   Put,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ResponseSolicitationUseCase } from './response-solicitation.useCase';
 import { ResponseSolicitationErrors } from './response-solicitation.errors';
-import { ResponseSolicitationDTO } from './response-solicitation.DTO';
-import { ParticpantStatus } from '../../domain/participant';
+import {
+  ResponseSolicitationDTO,
+  ResponseSolicitationBodyDataDTO,
+  ResponseSolicitationHeaderDataDTO,
+} from './response-solicitation.DTO';
+import { AuthGuard } from 'src/modules/user/use-cases/auth/auth.guard';
 @ApiTags('Participant')
-@Controller('api/v1/participant/response-solicitation/')
+@Controller('api/v1/response-solicitation/')
 export class ResponseSolicitationController {
   constructor(private readonly useCase: ResponseSolicitationUseCase) {}
 
@@ -20,17 +26,22 @@ export class ResponseSolicitationController {
     description: 'Response solicitation',
     type: ResponseSolicitationDTO,
   })
-  @Put(':id')
+  @UseGuards(AuthGuard)
+  @Put(':solicitationId')
   async ResponseSolicitation(
-    @Param('id') id: string,
-    @Body() status: { status: ParticpantStatus },
+    @Param('solicitationId') solicitationId: string,
+    @Body() bodyData: ResponseSolicitationBodyDataDTO,
+    @Req() headerData: ResponseSolicitationHeaderDataDTO,
   ) {
-    const result = await this.useCase.execute(id, status.status);
+    const userId = headerData.userId;
+    const result = await this.useCase.execute(solicitationId, bodyData, {
+      userId,
+    });
 
     if (result.isLeft()) {
       const error = result.value;
       if (
-        error.constructor === ResponseSolicitationErrors.SolicitationNotExists
+        error.constructor === ResponseSolicitationErrors.SolicitationNotFound
       ) {
         throw new NotFoundException(error);
       } else {

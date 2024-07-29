@@ -11,9 +11,9 @@ export class ParticipantDTO {
   @ApiProperty()
   status: ParticpantStatus;
   @ApiProperty()
-  presenceCount?: number;
+  presenceCount: number;
   @ApiProperty()
-  lateCount?: number;
+  lateCount: number;
   @ApiProperty()
   absenceCount?: number;
 }
