@@ -45,7 +45,7 @@ model Event {
   recurrence         Recurrence[]
   participant        Participant[]
   notification       Notification[] 
-  registerEvents    Register_Events[]
+  eventLog           Event_Log[]
   attendance         Attendance[] 
 }
 
@@ -80,7 +80,7 @@ model Notification {
   event      Event    @relation(fields: [eventId], references: [id]) 
 }
 
-model Register_Events {
+model Event_Log {
   id          String   @id @default(uuid()) @db.Uuid
   eventId     String   @db.Uuid
   date        DateTime
@@ -94,10 +94,10 @@ model Attendance {
   id                 String   @id @default(uuid()) @db.Uuid
   userId             String   @db.Uuid
   eventId            String   @db.Uuid
-  registerEventsId   String   @db.Uuid
+  eventLogId         String   @db.Uuid
   checkedInAt        DateTime
   status             String      
   user               User     @relation(fields: [userId], references: [id])    
   event              Event    @relation(fields: [eventId], references: [id])    
-  registerEvents    Register_Events @relation(fields: [registerEventsId], references: [id])    
+  eventLog           Event_Log @relation(fields: [eventLogId], references: [id])    
 }

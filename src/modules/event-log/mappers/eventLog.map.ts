@@ -1,4 +1,4 @@
-import { Register_Events as RegisterEventsPrisma } from '@prisma/client';
+import { Event_Log as EventLogPrisma } from '@prisma/client';
 import { EventLog } from '../domain/event-log';
 import { EventLogDTO } from '../dtos/event-log.DTO';
 
@@ -13,7 +13,7 @@ export class EventLogMapper {
     };
   }
 
-  public static toDomain(raw: RegisterEventsPrisma): EventLog {
+  public static toDomain(raw: EventLogPrisma): EventLog {
     const eventLogOrError = EventLog.create(
       {
         eventId: raw.eventId,
