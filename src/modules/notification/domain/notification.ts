@@ -2,6 +2,7 @@ import { Entity } from 'src/shared/application/domain/Entity';
 
 export enum NotificationTypes {
   solicitation = 'solicitation',
+  alert = 'alert',
 }
 
 interface NotificationProps {

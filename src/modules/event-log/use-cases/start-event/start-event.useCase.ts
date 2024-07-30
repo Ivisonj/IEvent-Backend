@@ -2,11 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { Either, left, right } from 'src/shared/application/Either';
 import { EventLog } from '../../domain/event-log';
 import { IEventLogRepository } from '../../repositories/event-log-repository.interface';
-import { StartEventDTORequest } from './start-event.DTO';
+import { StartEventHeaderDataDTO } from './start-event.DTO';
 import { StartEventErrors } from './start-event.errors';
 import { EventLogMapper } from '../../mappers/eventLog.map';
 import { EventLogDTO } from '../../dtos/event-log.DTO';
 import { CustomDate } from 'src/shared/application/customDate';
+import {
+  Notification,
+  NotificationTypes,
+} from 'src/modules/notification/domain/notification';
+import { INotificationRepository } from 'src/modules/notification/repositories/notification-repository.interface';
 
 export type StartEventResponse = Either<
   StartEventErrors.EventNotExists | Error,
@@ -15,11 +20,14 @@ export type StartEventResponse = Either<
 
 @Injectable()
 export class StartEventUseCase {
-  constructor(private readonly eventLogRepository: IEventLogRepository) {}
+  constructor(
+    private readonly eventLogRepository: IEventLogRepository,
+    private readonly notificationRepository: INotificationRepository,
+  ) {}
 
   public async execute(
     eventId: string,
-    userId: StartEventDTORequest,
+    headerData: StartEventHeaderDataDTO,
   ): Promise<StartEventResponse> {
     const eventExists = await this.eventLogRepository.eventExists(eventId);
 
@@ -27,7 +35,7 @@ export class StartEventUseCase {
 
     const isUserEventCreator = await this.eventLogRepository.isUserEventCreator(
       eventId,
-      userId.userId,
+      headerData.userId,
     );
 
     if (!isUserEventCreator)
@@ -55,6 +63,18 @@ export class StartEventUseCase {
     });
 
     const event = await this.eventLogRepository.create(registerEventOrError);
+
+    const notification = Notification.create({
+      userId: headerData.userId,
+      eventId: eventId,
+      message: 'O evento iniciou!',
+      type: 'alert' as NotificationTypes,
+      createdAt: CustomDate.fixTimezoneoffset(new Date()),
+      readed: false,
+    });
+
+    await this.notificationRepository.notify(notification);
+
     const dto = EventLogMapper.toDTO(event);
     return right(dto);
   }

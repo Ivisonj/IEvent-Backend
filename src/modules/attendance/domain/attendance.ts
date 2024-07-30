@@ -9,7 +9,7 @@ export enum AttendanceStatus {
 interface AttendanceProps {
   userId: string;
   eventId: string;
-  registerEventsId: string;
+  eventLogId: string;
   checkedInAt: string | Date;
   status: AttendanceStatus;
 }
@@ -23,8 +23,8 @@ export class Attendance extends Entity<AttendanceProps> {
     return this.props.eventId;
   }
 
-  get registerEventsId(): string {
-    return this.props.registerEventsId;
+  get eventLogId(): string {
+    return this.props.eventLogId;
   }
 
   get checkedInAt(): string | Date {

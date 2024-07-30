@@ -9,7 +9,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AttendanceUseCase } from './attendance.useCase';
-import { AttendanceDTOrequest } from './attendance.DTO';
+import {
+  AttendanceBodyDataDTO,
+  AttendanceHeaderDataDTO,
+} from './attendance.DTO';
 import { AttendanceErrors } from './attendance.errors';
 import { AttendanceDTO } from '../../dtos/attendence.DTO';
 
@@ -23,12 +26,11 @@ export class AttendanceController {
   })
   @Post()
   async attendance(
-    @Body(new ValidationPipe()) dto: AttendanceDTOrequest,
-    @Req() request: AttendanceDTOrequest,
+    @Body(new ValidationPipe()) bodyData: AttendanceBodyDataDTO,
+    @Req() headerData: AttendanceHeaderDataDTO,
   ) {
-    const userId = request.userId;
-    dto.userId = userId;
-    const result = await this.useCase.execute(dto);
+    const userId = headerData.userId;
+    const result = await this.useCase.execute(bodyData, { userId });
     if (result.isLeft()) {
       const error = result.value;
       if (error.constructor === AttendanceErrors.FailSolicitation) {

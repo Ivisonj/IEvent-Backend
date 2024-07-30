@@ -6,6 +6,8 @@ import { PgEventLogRepository } from './repositories/postgres/pg-event-log.repos
 import { StartEventUseCase } from './use-cases/start-event/start-event.useCase';
 import { FinishEVentController } from './use-cases/finish-event/finish-event.controller';
 import { FinishEventUseCase } from './use-cases/finish-event/finish-event.useCase';
+import { INotificationRepository } from '../notification/repositories/notification-repository.interface';
+import { PgNotificationRepository } from '../notification/repositories/postgres/Pg-notication.repository';
 
 @Module({
   controllers: [StartEventController, FinishEVentController],
@@ -15,9 +17,13 @@ import { FinishEventUseCase } from './use-cases/finish-event/finish-event.useCas
       provide: IEventLogRepository,
       useClass: PgEventLogRepository,
     },
+    {
+      provide: INotificationRepository,
+      useClass: PgNotificationRepository,
+    },
     StartEventUseCase,
     FinishEventUseCase,
   ],
-  exports: [IEventLogRepository],
+  exports: [IEventLogRepository, INotificationRepository],
 })
 export class EventLogModule {}

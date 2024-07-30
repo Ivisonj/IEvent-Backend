@@ -8,7 +8,7 @@ export class AttendanceMapper {
       id: attendance.id,
       userId: attendance.userId,
       eventId: attendance.eventId,
-      registerEventsId: attendance.registerEventsId,
+      eventLogId: attendance.eventLogId,
       checkedInAt: attendance.checkedInAt,
       status: attendance.status,
     };
@@ -19,7 +19,7 @@ export class AttendanceMapper {
       {
         userId: raw.userId,
         eventId: raw.eventId,
-        registerEventsId: raw.registerEventsId,
+        eventLogId: raw.eventLogId,
         checkedInAt: raw.checkedInAt,
         status: raw.status as AttendanceStatus,
       },
@@ -33,7 +33,7 @@ export class AttendanceMapper {
       id: attendance.id,
       userId: attendance.userId,
       eventId: attendance.eventId,
-      registerEventsId: attendance.registerEventsId,
+      eventLogId: attendance.eventLogId,
       checkedInAt: attendance.checkedInAt,
       status: attendance.status,
     };

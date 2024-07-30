@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class StartEventDTORequest {
+export class StartEventHeaderDataDTO {
   @ApiProperty()
   userId: string;
 }

@@ -1,11 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserIdDTO {
+export class FinishEventHeaderDataDTO {
   @ApiProperty()
   userId: string;
-}
-
-export class EventIdDTO {
-  @ApiProperty()
-  eventId: string;
 }
