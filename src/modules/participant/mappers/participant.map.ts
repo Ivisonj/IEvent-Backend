@@ -10,6 +10,9 @@ export class ParticipantMapper {
       userId: participant.userId,
       eventId: participant.eventId,
       status: participant.status,
+      presenceCount: participant.presenceCount,
+      lateCount: participant.lateCount,
+      absenceCount: participant.absenceCount,
     };
   }
 
@@ -19,6 +22,9 @@ export class ParticipantMapper {
         userId: raw.userId,
         eventId: raw.eventId,
         status: raw.status as ParticpantStatus,
+        presenceCount: raw.presenceCount,
+        lateCount: raw.lateCount,
+        absenceCount: raw.absenceCount,
       },
       raw.id,
     );
@@ -30,6 +36,9 @@ export class ParticipantMapper {
       userId: participant.userId,
       eventId: participant.eventId,
       status: participant.status,
+      presenceCount: participant.presenceCount,
+      lateCount: participant.lateCount,
+      absenceCount: participant.absenceCount,
     };
   }
 }

@@ -10,6 +10,7 @@ import {
   Notification,
   NotificationTypes,
 } from 'src/modules/notification/domain/notification';
+import { CustomDate } from 'src/shared/application/customDate';
 
 export type CreateParticipantResponse = Either<
   CreateParticipantErrors.UserNotExists | Error,
@@ -45,6 +46,9 @@ export class CreateParticipantUseCase {
       userId: userId,
       eventId: eventId,
       status: ParticpantStatus.pending,
+      presenceCount: 0,
+      lateCount: 0,
+      absenceCount: 0,
     });
 
     const participationRequest =
@@ -56,7 +60,7 @@ export class CreateParticipantUseCase {
       eventId: eventId,
       message: 'Você tem uma nova solicitação',
       type: 'solicitation' as NotificationTypes,
-      createdAt: new Date(),
+      createdAt: CustomDate.fixTimezoneoffset(new Date()),
       readed: false,
     });
 

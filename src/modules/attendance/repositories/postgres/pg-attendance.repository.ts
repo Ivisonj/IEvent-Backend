@@ -41,7 +41,7 @@ export class PgAttendanceRepository implements IAttendanceRepository {
   }
 
   async registerExists(registerId: string): Promise<EventLog | null> {
-    const register = await this.prisma.register_Events.findUnique({
+    const register = await this.prisma.event_Log.findUnique({
       where: { id: registerId, AND: { end_time: null } },
     });
     return !!register ? EventLogMapper.toDomain(register) : null;
@@ -56,7 +56,7 @@ export class PgAttendanceRepository implements IAttendanceRepository {
   }
 
   async eventStartTime(registerId: string): Promise<Date | null> {
-    const result = await this.prisma.register_Events.findUnique({
+    const result = await this.prisma.event_Log.findUnique({
       where: { id: registerId },
       select: { start_time: true },
     });

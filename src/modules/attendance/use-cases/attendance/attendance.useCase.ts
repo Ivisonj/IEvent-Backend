@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Either, left, right } from 'src/shared/application/Either';
-import { AttendanceDTOrequest } from './attendance.DTO';
+import {
+  AttendanceHeaderDataDTO,
+  AttendanceBodyDataDTO,
+} from './attendance.DTO';
 import { AttendanceErrors } from './attendance.errors';
 import { Attendance, AttendanceStatus } from '../../domain/attendance';
 import { AttendanceMapper } from '../../mappers/attendance.map';
@@ -18,38 +21,56 @@ export class AttendanceUseCase {
   constructor(private readonly attendanceRepository: IAttendanceRepository) {}
 
   public async execute(
-    request: AttendanceDTOrequest,
+    bodyData: AttendanceBodyDataDTO,
+    headerData: AttendanceHeaderDataDTO,
   ): Promise<AttendanceResponse> {
     const isParticipant = await this.attendanceRepository.isParticipant(
-      request.userId,
-      request.eventId,
+      headerData.userId,
+      bodyData.eventId,
     );
 
     if (!isParticipant)
       return left(new AttendanceErrors.UserOrEventDoesNotMatch());
 
     const registerExists = await this.attendanceRepository.registerExists(
-      request.registerEventsId,
+      bodyData.eventLogId,
     );
 
     if (!registerExists)
       return left(new AttendanceErrors.RegisterEventNotFound());
 
-    const event = await this.attendanceRepository.getEvent(request.eventId);
+    const event = await this.attendanceRepository.getEvent(bodyData.eventId);
     const eventStartTime = await this.attendanceRepository.eventStartTime(
-      request.registerEventsId,
+      bodyData.eventLogId,
     );
 
     if (event.custom_rules) {
       const startTime = new Date(eventStartTime);
       const checkedInAt = CustomDate.fixTimezoneoffset(new Date());
 
-      // const userStatus = checkedInAt.getMinutes() - startTime.getMinutes() <= event
+      const userStatus =
+        checkedInAt.getMinutes() - startTime.getMinutes() <=
+        event.tolerance_time
+          ? AttendanceStatus.presence
+          : AttendanceStatus.delay;
+
+      const attendanceOrError = Attendance.create({
+        userId: headerData.userId,
+        eventId: bodyData.eventId,
+        eventLogId: bodyData.eventLogId,
+        checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
+        status: userStatus,
+      });
+
+      const attendance =
+        await this.attendanceRepository.create(attendanceOrError);
+      const dto = AttendanceMapper.toDTO(attendance);
+      return right(dto);
     } else {
       const attendanceOrError = Attendance.create({
-        userId: request.userId,
-        eventId: request.eventId,
-        registerEventsId: request.registerEventsId,
+        userId: headerData.userId,
+        eventId: bodyData.eventId,
+        eventLogId: bodyData.eventLogId,
         checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
         status: AttendanceStatus.presence,
       });

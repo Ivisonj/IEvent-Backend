@@ -36,6 +36,14 @@ export class PgParticipantRepository implements IParticipantRepository {
     return !!result ? EventMapper.toDomain(result, result.recurrence) : null;
   }
 
+  async isEventCreator(eventId: string, userId: string): Promise<Event | null> {
+    const result = await this.prisma.event.findFirst({
+      where: { id: eventId, userId: userId },
+      include: { recurrence: true },
+    });
+    return !!result ? EventMapper.toDomain(result, result.recurrence) : null;
+  }
+
   async solicitationExists(
     userId: string,
     eventId: string,
@@ -60,21 +68,37 @@ export class PgParticipantRepository implements IParticipantRepository {
   }
 
   async updateStatus(
-    id: string,
+    solicitationId: string,
     updatedStatus: ParticpantStatus,
   ): Promise<Participant | null> {
     if (updatedStatus === ParticpantStatus.rejected) {
       await this.prisma.participant.delete({
-        where: { id },
+        where: { id: solicitationId },
       });
       return null;
     } else {
       const result = await this.prisma.participant.update({
-        where: { id },
+        where: { id: solicitationId },
         data: { status: updatedStatus },
       });
 
       return !!result ? ParticipantMapper.toDomain(result) : null;
     }
+  }
+
+  async findParticipants(
+    eventId: string,
+    userId: string,
+  ): Promise<Participant[] | null> {
+    const participants = await this.prisma.participant.findMany({
+      where: {
+        eventId: eventId,
+        userId: userId,
+        AND: { status: ParticpantStatus.accepted },
+      },
+    });
+    return participants.map((participant) =>
+      ParticipantMapper.toDomain(participant),
+    );
   }
 }

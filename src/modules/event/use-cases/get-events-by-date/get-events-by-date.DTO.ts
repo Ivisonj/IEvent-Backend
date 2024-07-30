@@ -13,6 +13,8 @@ export class GetEventByDateDTOResponse {
   @ApiProperty()
   name: string;
   @ApiProperty()
+  description: string;
+  @ApiProperty()
   address: string;
   @ApiProperty()
   isPublic: boolean;
@@ -25,13 +27,11 @@ export class GetEventByDateDTOResponse {
   @ApiProperty()
   custom_rules: boolean;
   @ApiProperty()
-  absences_limit?: boolean;
+  tolerance_time?: number;
   @ApiProperty()
-  max_absences?: number;
+  absences_limit?: number;
   @ApiProperty()
-  delays_limit?: boolean;
-  @ApiProperty()
-  max_delays?: number;
+  delays_limit?: number;
   @ApiProperty()
   start_date: string | Date;
   @ApiProperty()

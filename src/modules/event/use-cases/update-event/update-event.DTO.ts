@@ -30,6 +30,13 @@ export class UpdateEventDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MinLength(5)
+  @MaxLength(100)
+  description: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
   address: string;
 
   @ApiProperty()
@@ -38,14 +45,13 @@ export class UpdateEventDTO {
   isPublic: boolean;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsBoolean()
-  once: boolean;
+  isActive: boolean;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsBoolean()
-  isActive: boolean;
+  once: boolean;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -59,23 +65,18 @@ export class UpdateEventDTO {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsBoolean()
-  absences_limit?: boolean;
+  @IsInt()
+  tolerance_time?: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsInt()
-  max_absences?: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsBoolean()
-  delays_limit?: boolean;
+  absences_limit?: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsInt()
-  max_delays?: number;
+  delays_limit?: number;
 
   @ApiProperty()
   @IsNotEmpty()

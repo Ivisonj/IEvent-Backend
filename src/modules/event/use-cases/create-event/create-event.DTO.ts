@@ -23,6 +23,13 @@ export class CreateEventDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MinLength(5)
+  @MaxLength(100)
+  description: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
   address: string;
 
   @ApiProperty()
@@ -47,23 +54,18 @@ export class CreateEventDTO {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsBoolean()
-  absences_limit?: boolean;
+  @IsInt()
+  tolerance_time?: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsInt()
-  max_absences?: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsBoolean()
-  delays_limit?: boolean;
+  absences_limit?: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsInt()
-  max_delays?: number;
+  delays_limit?: number;
 
   @ApiProperty()
   @IsNotEmpty()

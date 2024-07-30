@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ParticpantStatus } from '../../domain/participant';
 
-export class CreateParticipantDTOResponse {
+export class GetParticipantsHeaderDataDTO {
+  @ApiProperty()
+  userId: string;
+}
+
+export class GetParticipantsDTOResponse {
   @ApiProperty()
   id: string;
   @ApiProperty()
   userId: string;
-  @ApiProperty()
-  eventId: string;
-  @ApiProperty()
-  status: ParticpantStatus;
   @ApiProperty()
   presenceCount?: number;
   @ApiProperty()

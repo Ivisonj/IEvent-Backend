@@ -11,7 +11,7 @@ import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { StartEventUseCase } from './start-event.useCase';
 import { StartEventErrors } from './start-event.errors';
 import { EventLogDTO } from '../../dtos/event-log.DTO';
-import { StartEventDTORequest } from './start-event.DTO';
+import { StartEventHeaderDataDTO } from './start-event.DTO';
 import { AuthGuard } from 'src/modules/user/use-cases/auth/auth.guard';
 
 @Controller('api/v1/start-event/')
@@ -26,10 +26,10 @@ export class StartEventController {
   @UseGuards(AuthGuard)
   @Post(':eventId')
   async startEvent(
-    @Req() request: StartEventDTORequest,
     @Param('eventId') eventId: string,
+    @Req() headerData: StartEventHeaderDataDTO,
   ) {
-    const userId = request.userId;
+    const userId = headerData.userId;
     const result = await this.useCase.execute(eventId, { userId });
     if (result.isLeft()) {
       const error = result.value;

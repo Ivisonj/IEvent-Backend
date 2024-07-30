@@ -9,7 +9,7 @@ export class AttendanceDTO {
   @ApiProperty()
   eventId: string;
   @ApiProperty()
-  registerEventsId: string;
+  eventLogId: string;
   @ApiProperty()
   checkedInAt: string | Date;
   @ApiProperty()

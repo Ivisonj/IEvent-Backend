@@ -11,7 +11,7 @@ export class PgEventLogRepository implements IEventLogRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async registerExists(registerId: string): Promise<EventLog | null> {
-    const result = await this.prisma.register_Events.findUnique({
+    const result = await this.prisma.event_Log.findUnique({
       where: { id: registerId },
     });
 
@@ -28,7 +28,7 @@ export class PgEventLogRepository implements IEventLogRepository {
   }
 
   async eventStarted(eventId: string): Promise<EventLog | null> {
-    const result = await this.prisma.register_Events.findFirst({
+    const result = await this.prisma.event_Log.findFirst({
       where: {
         eventId: eventId,
         AND: {
@@ -41,7 +41,7 @@ export class PgEventLogRepository implements IEventLogRepository {
   }
 
   async eventFinished(registerId: string): Promise<EventLog | null> {
-    const result = await this.prisma.register_Events.findUnique({
+    const result = await this.prisma.event_Log.findUnique({
       where: { id: registerId, AND: { end_time: null } },
     });
 
@@ -83,7 +83,7 @@ export class PgEventLogRepository implements IEventLogRepository {
 
   async create(event: EventLog): Promise<EventLog | null> {
     const data = await EventLogMapper.toPersistence(event);
-    const result = await this.prisma.register_Events.create({
+    const result = await this.prisma.event_Log.create({
       data,
     });
 
@@ -91,7 +91,7 @@ export class PgEventLogRepository implements IEventLogRepository {
   }
 
   async endEvent(registerId: string, time): Promise<EventLog | null> {
-    const result = await this.prisma.register_Events.update({
+    const result = await this.prisma.event_Log.update({
       where: { id: registerId },
       data: { end_time: time },
     });

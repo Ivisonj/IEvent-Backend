@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Either, left, right } from 'src/shared/application/Either';
-import { ResponseSolicitationDTO } from './response-solicitation.DTO';
+import {
+  ResponseSolicitationDTO,
+  ResponseSolicitationBodyDataDTO,
+  ResponseSolicitationHeaderDataDTO,
+} from './response-solicitation.DTO';
 import { IParticipantRepository } from '../../repositories/participant-repository.interface';
 import { ResponseSolicitationErrors } from './response-solicitation.errors';
 import { ParticipantMapper } from '../../mappers/participant.map';
 import { ParticpantStatus } from '../../domain/participant';
 
 export type ResponseSolicitationResponse = Either<
-  ResponseSolicitationErrors.SolicitationNotExists | Error,
+  ResponseSolicitationErrors.SolicitationNotFound | Error,
   ResponseSolicitationDTO
 >;
 
@@ -16,26 +20,37 @@ export class ResponseSolicitationUseCase {
   constructor(private readonly participantRepository: IParticipantRepository) {}
 
   public async execute(
-    id: string,
-    status: ParticpantStatus,
+    solicitationId: string,
+    bodyData: ResponseSolicitationBodyDataDTO,
+    headerData: ResponseSolicitationHeaderDataDTO,
   ): Promise<ResponseSolicitationResponse> {
-    const solicitationExists = await this.participantRepository.exists(id);
+    const solicitationExists =
+      await this.participantRepository.exists(solicitationId);
 
     if (!solicitationExists)
-      return left(new ResponseSolicitationErrors.SolicitationNotExists());
+      return left(new ResponseSolicitationErrors.SolicitationNotFound());
 
-    const updatedParticipant = await this.participantRepository.updateStatus(
-      id,
-      status,
+    const isEventCreator = await this.participantRepository.isEventCreator(
+      bodyData.eventId,
+      headerData.userId,
     );
 
-    if (!updatedParticipant && status === ParticpantStatus.rejected) {
+    if (!isEventCreator)
+      return left(
+        new ResponseSolicitationErrors.YouNotHavePermissionToAcceptThisSolicitation(),
+      );
+
+    const updatedParticipant = await this.participantRepository.updateStatus(
+      solicitationId,
+      bodyData.status,
+    );
+
+    if (!updatedParticipant && bodyData.status === ParticpantStatus.rejected) {
       return right(null);
     }
 
-    if (!updatedParticipant) {
-      return left(new Error('Failed to update status'));
-    }
+    if (!updatedParticipant)
+      return left(new ResponseSolicitationErrors.FailToUpdateStatus());
 
     const dto = ParticipantMapper.toDTO(updatedParticipant);
     return right(dto);
