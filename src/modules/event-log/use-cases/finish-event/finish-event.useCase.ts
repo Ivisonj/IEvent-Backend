@@ -25,17 +25,17 @@ export class FinishEventUseCase {
   ) {}
 
   public async execute(
-    registerId: string,
+    eventLogId: string,
     eventId: string,
     headerData: FinishEventHeaderDataDTO,
   ): Promise<FinishEventResponse> {
     const registerExists =
-      await this.eventLogRepository.registerExists(registerId);
+      await this.eventLogRepository.registerExists(eventLogId);
 
     if (!registerExists) return left(new FinishEventErrors.RegisterNotFound());
 
     const eventFinished =
-      await this.eventLogRepository.eventFinished(registerId);
+      await this.eventLogRepository.eventFinished(eventLogId);
 
     if (!eventFinished)
       return left(new FinishEventErrors.EventAlreadyFinished());
@@ -51,7 +51,8 @@ export class FinishEventUseCase {
     const endTime = CustomDate.fixTimezoneoffset(new Date());
 
     const eventEnded = await this.eventLogRepository.endEvent(
-      registerId,
+      eventLogId,
+      eventId,
       endTime,
     );
 

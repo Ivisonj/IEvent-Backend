@@ -10,7 +10,7 @@ import { AuthGuard } from './auth.guard';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '72h' },
+      signOptions: { expiresIn: '30d' },
     }),
   ],
   providers: [AuthService, PrismaService, AuthGuard],

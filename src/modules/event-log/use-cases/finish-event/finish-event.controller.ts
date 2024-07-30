@@ -25,14 +25,14 @@ export class FinishEVentController {
     type: EventLogDTO,
   })
   @UseGuards(AuthGuard)
-  @Patch(':registerId')
+  @Patch(':eventLogId')
   async finishEvent(
-    @Param('registerId') registerId: string,
+    @Param('eventLogId') eventLogId: string,
     @Body() eventId: string,
     @Req() headerData: FinishEventHeaderDataDTO,
   ) {
     const userId = headerData.userId;
-    const result = await this.useCase.execute(registerId, eventId, { userId });
+    const result = await this.useCase.execute(eventLogId, eventId, { userId });
     if (result.isLeft()) {
       const error = result.value;
       if (error.constructor === FinishEventErrors.FailToFinishEvent) {
