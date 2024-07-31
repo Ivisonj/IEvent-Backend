@@ -6,6 +6,7 @@ import {
   Controller,
   Post,
   Req,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { AttendanceUseCase } from './attendance.useCase';
@@ -15,6 +16,7 @@ import {
 } from './attendance.DTO';
 import { AttendanceErrors } from './attendance.errors';
 import { AttendanceDTO } from '../../dtos/attendence.DTO';
+import { AuthGuard } from 'src/modules/user/use-cases/auth/auth.guard';
 
 @Controller('api/v1/attendance')
 @ApiTags('Attendance')
@@ -24,6 +26,7 @@ export class AttendanceController {
     description: 'Create user attendance',
     type: AttendanceDTO,
   })
+  @UseGuards(AuthGuard)
   @Post()
   async attendance(
     @Body(new ValidationPipe()) bodyData: AttendanceBodyDataDTO,

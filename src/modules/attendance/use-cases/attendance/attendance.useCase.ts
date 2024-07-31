@@ -32,12 +32,20 @@ export class AttendanceUseCase {
     if (!isParticipant)
       return left(new AttendanceErrors.UserOrEventDoesNotMatch());
 
-    const registerExists = await this.attendanceRepository.registerExists(
+    const registerExists = await this.attendanceRepository.eventLogExists(
       bodyData.eventLogId,
     );
 
-    if (!registerExists)
-      return left(new AttendanceErrors.RegisterEventNotFound());
+    if (!registerExists) return left(new AttendanceErrors.EventLogNotFound());
+
+    const attendanceRecordExists =
+      await this.attendanceRepository.attendanceRecordExists(
+        bodyData.eventLogId,
+        headerData.userId,
+      );
+
+    if (attendanceRecordExists)
+      return left(new AttendanceErrors.PresenceAlreadyConfirmed());
 
     const event = await this.attendanceRepository.getEvent(bodyData.eventId);
     const eventStartTime = await this.attendanceRepository.eventStartTime(

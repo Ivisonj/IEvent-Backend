@@ -9,7 +9,11 @@ export abstract class IAttendanceRepository {
     userId: string,
     eventId: string,
   ): Promise<Participant | null>;
-  abstract registerExists(registerId: string): Promise<EventLog | null>;
+  abstract eventLogExists(eventLogId: string): Promise<EventLog | null>;
   abstract getEvent(eventId: string): Promise<Event | null>;
-  abstract eventStartTime(registerId: string): Promise<Date | null>;
+  abstract eventStartTime(eventLogId: string): Promise<Date | null>;
+  abstract attendanceRecordExists(
+    event_Log: string,
+    userId: string,
+  ): Promise<Attendance | null>;
 }

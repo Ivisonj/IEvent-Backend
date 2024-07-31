@@ -117,19 +117,21 @@ export class PgEventLogRepository implements IEventLogRepository {
       (p) => !attendedUserIds.has(p.userId),
     );
 
-    const absenceUpdates = absentees.map((absense) =>
-      this.prisma.attendance.createMany({
-        data: {
-          userId: absense.userId,
-          eventId: eventId,
-          eventLogId: eventLogId,
-          checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
-          status: AttendanceStatus.absence,
-        },
-      }),
-    );
+    if (participantsPresent) {
+      const absenceUpdates = absentees.map((absense) =>
+        this.prisma.attendance.createMany({
+          data: {
+            userId: absense.userId,
+            eventId: eventId,
+            eventLogId: eventLogId,
+            checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
+            status: AttendanceStatus.absence,
+          },
+        }),
+      );
 
-    await this.prisma.$transaction(absenceUpdates);
+      await this.prisma.$transaction(absenceUpdates);
+    }
 
     return !!result ? EventLogMapper.toDomain(result) : null;
   }

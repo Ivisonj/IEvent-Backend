@@ -13,9 +13,15 @@ export namespace AttendanceErrors {
     }
   }
 
-  export class RegisterEventNotFound extends UseCaseError {
+  export class EventLogNotFound extends UseCaseError {
     constructor() {
-      super('register event not found');
+      super('Event log not found');
+    }
+  }
+
+  export class PresenceAlreadyConfirmed extends UseCaseError {
+    constructor() {
+      super('Presence already confirmed');
     }
   }
 }

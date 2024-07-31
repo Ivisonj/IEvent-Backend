@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Either, left, right } from 'src/shared/application/Either';
 import { IEventLogRepository } from '../../repositories/event-log-repository.interface';
-import { FinishEventHeaderDataDTO } from './finish-event.DTO';
+import {
+  FinishEventHeaderDataDTO,
+  FinishEventBodyDataDTO,
+} from './finish-event.DTO';
 import { FinishEventErrors } from './finish-event.errors';
 import { EventLogMapper } from '../../mappers/eventLog.map';
 import { EventLogDTO } from '../../dtos/event-log.DTO';
@@ -26,7 +29,7 @@ export class FinishEventUseCase {
 
   public async execute(
     eventLogId: string,
-    eventId: string,
+    bodyData: FinishEventBodyDataDTO,
     headerData: FinishEventHeaderDataDTO,
   ): Promise<FinishEventResponse> {
     const registerExists =
@@ -41,7 +44,7 @@ export class FinishEventUseCase {
       return left(new FinishEventErrors.EventAlreadyFinished());
 
     const isUserEventCreator = await this.eventLogRepository.isUserEventCreator(
-      eventId,
+      bodyData.eventId,
       headerData.userId,
     );
 
@@ -52,7 +55,7 @@ export class FinishEventUseCase {
 
     const eventEnded = await this.eventLogRepository.endEvent(
       eventLogId,
-      eventId,
+      bodyData.eventId,
       endTime,
     );
 
@@ -60,7 +63,7 @@ export class FinishEventUseCase {
 
     const notification = Notification.create({
       userId: headerData.userId,
-      eventId: eventId,
+      eventId: bodyData.eventId,
       message: 'O evento terminou!',
       type: 'alert' as NotificationTypes,
       createdAt: CustomDate.fixTimezoneoffset(new Date()),

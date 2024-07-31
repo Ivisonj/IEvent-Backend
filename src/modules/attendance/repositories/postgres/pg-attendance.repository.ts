@@ -40,9 +40,9 @@ export class PgAttendanceRepository implements IAttendanceRepository {
     return !!result ? ParticipantMapper.toDomain(result) : null;
   }
 
-  async registerExists(registerId: string): Promise<EventLog | null> {
+  async eventLogExists(eventLogId: string): Promise<EventLog | null> {
     const register = await this.prisma.event_Log.findUnique({
-      where: { id: registerId, AND: { end_time: null } },
+      where: { id: eventLogId, AND: { end_time: null } },
     });
     return !!register ? EventLogMapper.toDomain(register) : null;
   }
@@ -55,11 +55,22 @@ export class PgAttendanceRepository implements IAttendanceRepository {
     return !!event ? EventMapper.toDomain(event, event.recurrence) : null;
   }
 
-  async eventStartTime(registerId: string): Promise<Date | null> {
+  async eventStartTime(eventLogId: string): Promise<Date | null> {
     const result = await this.prisma.event_Log.findUnique({
-      where: { id: registerId },
+      where: { id: eventLogId },
       select: { start_time: true },
     });
     return !!result ? result.start_time : null;
+  }
+
+  async attendanceRecordExists(
+    eventLogId: string,
+    userId: string,
+  ): Promise<Attendance | null> {
+    const result = await this.prisma.attendance.findFirst({
+      where: { eventLogId: eventLogId, userId: userId },
+    });
+
+    return !!result ? AttendanceMapper.toDomain(result) : null;
   }
 }
