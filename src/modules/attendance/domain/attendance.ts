@@ -2,7 +2,7 @@ import { Entity } from 'src/shared/application/domain/Entity';
 
 export enum AttendanceStatus {
   presence = 'presence',
-  delay = 'delay',
+  late = 'late',
   absence = 'absence',
 }
 

@@ -12,7 +12,10 @@ import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { FinishEventUseCase } from './finish-event.useCase';
 import { FinishEventErrors } from './finish-event.errors';
 import { EventLogDTO } from '../../dtos/event-log.DTO';
-import { FinishEventHeaderDataDTO } from './finish-event.DTO';
+import {
+  FinishEventHeaderDataDTO,
+  FinishEventBodyDataDTO,
+} from './finish-event.DTO';
 import { AuthGuard } from 'src/modules/user/use-cases/auth/auth.guard';
 
 @Controller('api/v1/finish-event/')
@@ -25,14 +28,14 @@ export class FinishEVentController {
     type: EventLogDTO,
   })
   @UseGuards(AuthGuard)
-  @Patch(':registerId')
+  @Patch(':eventLogId')
   async finishEvent(
-    @Param('registerId') registerId: string,
-    @Body() eventId: string,
+    @Param('eventLogId') eventLogId: string,
+    @Body() bodyData: FinishEventBodyDataDTO,
     @Req() headerData: FinishEventHeaderDataDTO,
   ) {
     const userId = headerData.userId;
-    const result = await this.useCase.execute(registerId, eventId, { userId });
+    const result = await this.useCase.execute(eventLogId, bodyData, { userId });
     if (result.isLeft()) {
       const error = result.value;
       if (error.constructor === FinishEventErrors.FailToFinishEvent) {

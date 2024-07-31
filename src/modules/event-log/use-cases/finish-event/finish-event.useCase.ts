@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Either, left, right } from 'src/shared/application/Either';
 import { IEventLogRepository } from '../../repositories/event-log-repository.interface';
-import { FinishEventHeaderDataDTO } from './finish-event.DTO';
+import {
+  FinishEventHeaderDataDTO,
+  FinishEventBodyDataDTO,
+} from './finish-event.DTO';
 import { FinishEventErrors } from './finish-event.errors';
 import { EventLogMapper } from '../../mappers/eventLog.map';
 import { EventLogDTO } from '../../dtos/event-log.DTO';
@@ -25,23 +28,23 @@ export class FinishEventUseCase {
   ) {}
 
   public async execute(
-    registerId: string,
-    eventId: string,
+    eventLogId: string,
+    bodyData: FinishEventBodyDataDTO,
     headerData: FinishEventHeaderDataDTO,
   ): Promise<FinishEventResponse> {
     const registerExists =
-      await this.eventLogRepository.registerExists(registerId);
+      await this.eventLogRepository.registerExists(eventLogId);
 
-    if (!registerExists) return left(new FinishEventErrors.RegisterNotFound());
+    if (!registerExists) return left(new FinishEventErrors.EventLogNotFound());
 
     const eventFinished =
-      await this.eventLogRepository.eventFinished(registerId);
+      await this.eventLogRepository.eventFinished(eventLogId);
 
     if (!eventFinished)
       return left(new FinishEventErrors.EventAlreadyFinished());
 
     const isUserEventCreator = await this.eventLogRepository.isUserEventCreator(
-      eventId,
+      bodyData.eventId,
       headerData.userId,
     );
 
@@ -51,7 +54,8 @@ export class FinishEventUseCase {
     const endTime = CustomDate.fixTimezoneoffset(new Date());
 
     const eventEnded = await this.eventLogRepository.endEvent(
-      registerId,
+      eventLogId,
+      bodyData.eventId,
       endTime,
     );
 
@@ -59,7 +63,7 @@ export class FinishEventUseCase {
 
     const notification = Notification.create({
       userId: headerData.userId,
-      eventId: eventId,
+      eventId: bodyData.eventId,
       message: 'O evento terminou!',
       type: 'alert' as NotificationTypes,
       createdAt: CustomDate.fixTimezoneoffset(new Date()),
