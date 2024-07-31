@@ -60,7 +60,7 @@ export class AttendanceUseCase {
         checkedInAt.getMinutes() - startTime.getMinutes() <=
         event.tolerance_time
           ? AttendanceStatus.presence
-          : AttendanceStatus.delay;
+          : AttendanceStatus.late;
 
       const attendanceOrError = Attendance.create({
         userId: headerData.userId,

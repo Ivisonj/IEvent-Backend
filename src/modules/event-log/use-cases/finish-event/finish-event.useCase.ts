@@ -35,7 +35,7 @@ export class FinishEventUseCase {
     const registerExists =
       await this.eventLogRepository.registerExists(eventLogId);
 
-    if (!registerExists) return left(new FinishEventErrors.RegisterNotFound());
+    if (!registerExists) return left(new FinishEventErrors.EventLogNotFound());
 
     const eventFinished =
       await this.eventLogRepository.eventFinished(eventLogId);

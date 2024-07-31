@@ -108,7 +108,7 @@ export class PgEventLogRepository implements IEventLogRepository {
     });
 
     const participantsPresent = await this.prisma.attendance.findMany({
-      where: { id: eventLogId },
+      where: { eventLogId: eventLogId },
     });
 
     const attendedUserIds = new Set(participantsPresent.map((p) => p.userId));
