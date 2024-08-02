@@ -24,4 +24,10 @@ export namespace AttendanceErrors {
       super('Presence already confirmed');
     }
   }
+
+  export class FailUpdateParticipantAttendance extends UseCaseError {
+    constructor() {
+      super('Fail to update participant attendance');
+    }
+  }
 }

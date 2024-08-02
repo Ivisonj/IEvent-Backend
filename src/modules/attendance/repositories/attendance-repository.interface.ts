@@ -16,4 +16,13 @@ export abstract class IAttendanceRepository {
     event_Log: string,
     userId: string,
   ): Promise<Attendance | null>;
+  abstract updateParticipantAttendance(
+    eventId: string,
+    userId: string,
+    status: string,
+  ): Promise<Participant | null>;
+  abstract updateParticipantPresence(
+    eventId: string,
+    userId: string,
+  ): Promise<Participant | null>;
 }
