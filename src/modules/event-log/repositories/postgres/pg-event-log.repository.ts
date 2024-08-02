@@ -131,6 +131,19 @@ export class PgEventLogRepository implements IEventLogRepository {
       );
 
       await this.prisma.$transaction(absenceUpdates);
+    } else {
+      const absenceUpdates = participants.map((absence) =>
+        this.prisma.attendance.createMany({
+          data: {
+            userId: absence.userId,
+            eventId: eventId,
+            eventLogId: eventLogId,
+            checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
+            status: AttendanceStatus.absence,
+          },
+        }),
+      );
+      await this.prisma.$transaction(absenceUpdates);
     }
 
     return !!result ? EventLogMapper.toDomain(result) : null;
