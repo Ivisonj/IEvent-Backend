@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Attendance } from '../../domain/attendance';
+import { Attendance, AttendanceStatus } from '../../domain/attendance';
 import { PrismaService } from 'src/shared/infra/database/prisma/prisma-service.module';
 import { IAttendanceRepository } from '../attendance-repository.interface';
 import { AttendanceMapper } from '../../mappers/attendance.map';
@@ -72,5 +72,74 @@ export class PgAttendanceRepository implements IAttendanceRepository {
     });
 
     return !!result ? AttendanceMapper.toDomain(result) : null;
+  }
+
+  async updateParticipantAttendance(
+    eventId: string,
+    userId: string,
+    status: string,
+  ): Promise<Participant | null> {
+    if (status === AttendanceStatus.presence) {
+      const participantId = await this.prisma.participant.findFirst({
+        where: { eventId: eventId, userId: userId },
+        select: { id: true },
+      });
+
+      const updateParticipant = await this.prisma.participant.update({
+        where: { id: participantId.id },
+        data: { presenceCount: { increment: 1 } },
+      });
+
+      return !!updateParticipant
+        ? ParticipantMapper.toDomain(updateParticipant)
+        : null;
+    } else if (status === AttendanceStatus.late) {
+      const participant = await this.prisma.participant.findFirst({
+        where: { eventId: eventId, userId: userId },
+      });
+
+      const event = await this.prisma.event.findUnique({
+        where: { id: eventId },
+        include: { recurrence: true },
+      });
+
+      if (participant.lateCount > event.delays_limit) {
+        const updateParticipant = await this.prisma.participant.update({
+          where: { id: participant.id },
+          data: { lateCount: 1 },
+        });
+
+        return !!updateParticipant
+          ? ParticipantMapper.toDomain(updateParticipant)
+          : null;
+      } else {
+        const updateParticipant = await this.prisma.participant.update({
+          where: { id: participant.id },
+          data: { lateCount: { increment: 1 } },
+        });
+
+        return !!updateParticipant
+          ? ParticipantMapper.toDomain(updateParticipant)
+          : null;
+      }
+    }
+  }
+
+  async updateParticipantPresence(
+    eventId: string,
+    userId: string,
+  ): Promise<Participant | null> {
+    const participant = await this.prisma.participant.findFirst({
+      where: { eventId: eventId, userId: userId },
+    });
+
+    const updateParticipant = await this.prisma.participant.update({
+      where: { id: participant.id },
+      data: { presenceCount: { increment: 1 } },
+    });
+
+    return !!updateParticipant
+      ? ParticipantMapper.toDomain(updateParticipant)
+      : null;
   }
 }

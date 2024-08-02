@@ -56,7 +56,7 @@ export class AttendanceUseCase {
       const startTime = new Date(eventStartTime);
       const checkedInAt = CustomDate.fixTimezoneoffset(new Date());
 
-      const userStatus =
+      const participantStatus =
         checkedInAt.getMinutes() - startTime.getMinutes() <=
         event.tolerance_time
           ? AttendanceStatus.presence
@@ -67,8 +67,18 @@ export class AttendanceUseCase {
         eventId: bodyData.eventId,
         eventLogId: bodyData.eventLogId,
         checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
-        status: userStatus,
+        status: participantStatus,
       });
+
+      const updateParticipantAttendance =
+        await this.attendanceRepository.updateParticipantAttendance(
+          bodyData.eventId,
+          headerData.userId,
+          AttendanceStatus.presence,
+        );
+
+      if (!updateParticipantAttendance)
+        return left(new AttendanceErrors.FailUpdateParticipantAttendance());
 
       const attendance =
         await this.attendanceRepository.create(attendanceOrError);
@@ -82,6 +92,15 @@ export class AttendanceUseCase {
         checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
         status: AttendanceStatus.presence,
       });
+
+      const updateParticipantPresence =
+        await this.attendanceRepository.updateParticipantPresence(
+          bodyData.eventId,
+          headerData.userId,
+        );
+
+      if (!updateParticipantPresence)
+        return left(new AttendanceErrors.FailUpdateParticipantAttendance());
 
       const attendance =
         await this.attendanceRepository.create(attendanceOrError);
