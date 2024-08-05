@@ -10,6 +10,11 @@ import { AttendanceMapper } from '../../mappers/attendance.map';
 import { IAttendanceRepository } from '../../repositories/attendance-repository.interface';
 import { AttendanceDTO } from '../../dtos/attendence.DTO';
 import { CustomDate } from 'src/shared/application/customDate';
+import {
+  Notification,
+  NotificationTypes,
+} from 'src/modules/notification/domain/notification';
+import { INotificationRepository } from 'src/modules/notification/repositories/notification-repository.interface';
 
 export type AttendanceResponse = Either<
   AttendanceErrors.FailSolicitation | Error,
@@ -18,18 +23,21 @@ export type AttendanceResponse = Either<
 
 @Injectable()
 export class AttendanceUseCase {
-  constructor(private readonly attendanceRepository: IAttendanceRepository) {}
+  constructor(
+    private readonly attendanceRepository: IAttendanceRepository,
+    private readonly notificationRepository: INotificationRepository,
+  ) {}
 
   public async execute(
     bodyData: AttendanceBodyDataDTO,
     headerData: AttendanceHeaderDataDTO,
   ): Promise<AttendanceResponse> {
-    const isParticipant = await this.attendanceRepository.isParticipant(
+    const participantData = await this.attendanceRepository.participantData(
       headerData.userId,
       bodyData.eventId,
     );
 
-    if (!isParticipant)
+    if (!participantData)
       return left(new AttendanceErrors.UserOrEventDoesNotMatch());
 
     const registerExists = await this.attendanceRepository.eventLogExists(
@@ -47,7 +55,7 @@ export class AttendanceUseCase {
     if (attendanceRecordExists)
       return left(new AttendanceErrors.PresenceAlreadyConfirmed());
 
-    const event = await this.attendanceRepository.getEvent(bodyData.eventId);
+    const event = await this.attendanceRepository.findEvent(bodyData.eventId);
     const eventStartTime = await this.attendanceRepository.eventStartTime(
       bodyData.eventLogId,
     );
@@ -79,6 +87,30 @@ export class AttendanceUseCase {
 
       if (!updateParticipantAttendance)
         return left(new AttendanceErrors.FailUpdateParticipantAttendance());
+
+      if (participantData.lateCount + 1 === event.delays_limit) {
+        const notification = await Notification.create({
+          userId: headerData.userId,
+          eventId: bodyData.eventId,
+          message: 'Você está próximo de atingir o número máximo de atrasos!',
+          type: 'alert' as NotificationTypes,
+          createdAt: CustomDate.fixTimezoneoffset(new Date()),
+          readed: false,
+        });
+
+        await this.notificationRepository.notify(notification);
+      } else if (participantData.lateCount === event.delays_limit) {
+        const notification = await Notification.create({
+          userId: headerData.userId,
+          eventId: bodyData.eventId,
+          message: 'Você qtingiu o número máximo de atrasos!',
+          type: 'alert' as NotificationTypes,
+          createdAt: CustomDate.fixTimezoneoffset(new Date()),
+          readed: false,
+        });
+
+        await this.notificationRepository.notify(notification);
+      }
 
       const attendance =
         await this.attendanceRepository.create(attendanceOrError);
