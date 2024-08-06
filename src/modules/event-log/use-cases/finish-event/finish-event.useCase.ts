@@ -14,6 +14,10 @@ import {
   Notification,
   NotificationTypes,
 } from 'src/modules/notification/domain/notification';
+import {
+  Attendance,
+  AttendanceStatus,
+} from 'src/modules/attendance/domain/attendance';
 
 export type FinishEventResponse = Either<
   FinishEventErrors.FailToFinishEvent | Error,
@@ -55,7 +59,6 @@ export class FinishEventUseCase {
 
     const eventEnded = await this.eventLogRepository.endEvent(
       eventLogId,
-      bodyData.eventId,
       endTime,
     );
 
@@ -71,6 +74,133 @@ export class FinishEventUseCase {
     });
 
     await this.notificationRepository.notify(notification);
+
+    const participants = await this.eventLogRepository.findParticipants(
+      bodyData.eventId,
+    );
+
+    const participantsPresent =
+      await this.eventLogRepository.participantsPresent(eventLogId);
+
+    const participantsPresentIds = new Set(
+      participantsPresent.map((p) => p.userId),
+    );
+
+    const absentees = participants.filter(
+      (p) => !participantsPresentIds.has(p.userId),
+    );
+
+    if (participantsPresent) {
+      const participantAbsences = absentees.map((absence) =>
+        Attendance.create({
+          userId: absence.userId,
+          eventId: absence.eventId,
+          eventLogId: eventLogId,
+          checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
+          status: AttendanceStatus.absence,
+        }),
+      );
+      await this.eventLogRepository.putParticipantAbsences(participantAbsences);
+
+      const eventData = await this.eventLogRepository.eventExists(
+        bodyData.eventId,
+      );
+
+      if (eventData) {
+        const participantNearAbsenceLimit = participants.filter(
+          (participant) =>
+            participant.absenceCount + 1 === eventData.absences_limit,
+        );
+
+        if (participantNearAbsenceLimit.length > 0) {
+          for (const participant of participantNearAbsenceLimit) {
+            const notifications = Notification.create({
+              userId: participant.userId,
+              eventId: bodyData.eventId,
+              message: 'Você está próximo de atingir o limite de faltas!',
+              type: 'alert' as NotificationTypes,
+              createdAt: CustomDate.fixTimezoneoffset(new Date()),
+              readed: false,
+            });
+            await this.notificationRepository.notify(notifications);
+          }
+        }
+
+        const participantAtMaxAbsences = participants.filter(
+          (participant) =>
+            participant.absenceCount === eventData.absences_limit,
+        );
+
+        if (participantAtMaxAbsences.length > 0) {
+          for (const participant of participantAtMaxAbsences) {
+            const notifications = Notification.create({
+              userId: participant.userId,
+              eventId: bodyData.eventId,
+              message: 'Você atintiu o limite de faltas!',
+              type: 'alert' as NotificationTypes,
+              createdAt: CustomDate.fixTimezoneoffset(new Date()),
+              readed: false,
+            });
+            await this.notificationRepository.notify(notifications);
+          }
+        }
+      }
+    } else {
+      const participantAbsences = participants.map((absence) =>
+        Attendance.create({
+          userId: absence.userId,
+          eventId: absence.eventId,
+          eventLogId: eventLogId,
+          checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
+          status: AttendanceStatus.absence,
+        }),
+      );
+      await this.eventLogRepository.putParticipantAbsences(participantAbsences);
+
+      const eventData = await this.eventLogRepository.eventExists(
+        bodyData.eventId,
+      );
+
+      if (eventData) {
+        const participantNearAbsenceLimit = participants.filter(
+          (participant) =>
+            participant.absenceCount + 1 === eventData.absences_limit,
+        );
+
+        if (participantNearAbsenceLimit.length > 0) {
+          for (const participant of participantNearAbsenceLimit) {
+            const notifications = Notification.create({
+              userId: participant.userId,
+              eventId: bodyData.eventId,
+              message: 'Você está próximo de atingir o limite de faltas!',
+              type: 'alert' as NotificationTypes,
+              createdAt: CustomDate.fixTimezoneoffset(new Date()),
+              readed: false,
+            });
+            await this.notificationRepository.notify(notifications);
+          }
+        }
+
+        const participantAtMaxAbsences = participants.filter(
+          (participant) =>
+            participant.absenceCount === eventData.absences_limit,
+        );
+
+        if (participantAtMaxAbsences.length > 0) {
+          for (const participant of participantAtMaxAbsences) {
+            const notifications = Notification.create({
+              userId: participant.userId,
+              eventId: bodyData.eventId,
+              message: 'Você atintiu o limite de faltas!',
+              type: 'alert' as NotificationTypes,
+              createdAt: CustomDate.fixTimezoneoffset(new Date()),
+              readed: false,
+            });
+            await this.notificationRepository.notify(notifications);
+          }
+        }
+      }
+    }
 
     const dto = EventLogMapper.toDTO(eventEnded);
     return right(dto);

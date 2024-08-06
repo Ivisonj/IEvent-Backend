@@ -5,8 +5,10 @@ import { IEventLogRepository } from '../event-log-repository.interface';
 import { PrismaService } from 'src/shared/infra/database/prisma/prisma-service.module';
 import { Event } from 'src/modules/event/domain/Event';
 import { EventMapper } from 'src/modules/event/mappers/event.map';
-import { CustomDate } from 'src/shared/application/customDate';
-import { AttendanceStatus } from 'src/modules/attendance/domain/attendance';
+import { Attendance } from 'src/modules/attendance/domain/attendance';
+import { Participant } from 'src/modules/participant/domain/participant';
+import { ParticipantMapper } from 'src/modules/participant/mappers/participant.map';
+import { AttendanceMapper } from 'src/modules/attendance/mappers/attendance.map';
 
 @Injectable()
 export class PgEventLogRepository implements IEventLogRepository {
@@ -92,60 +94,56 @@ export class PgEventLogRepository implements IEventLogRepository {
     return !!result ? EventLogMapper.toDomain(result) : null;
   }
 
-  async endEvent(
-    eventLogId: string,
-    eventId: string,
-    time,
-  ): Promise<EventLog | null> {
+  async endEvent(eventLogId: string, time): Promise<EventLog | null> {
     const result = await this.prisma.event_Log.update({
       where: { id: eventLogId },
       data: { end_time: time },
     });
 
+    return !!result ? EventLogMapper.toDomain(result) : null;
+  }
+
+  async findParticipants(eventId: string): Promise<Participant[] | null> {
     const participants = await this.prisma.participant.findMany({
       where: { eventId: eventId },
-      select: { userId: true },
     });
+    return !!participants
+      ? participants.map((participant) =>
+          ParticipantMapper.toDomain(participant),
+        )
+      : null;
+  }
 
+  async participantsPresent(eventLogId: string): Promise<Attendance[] | null> {
     const participantsPresent = await this.prisma.attendance.findMany({
       where: { eventLogId: eventLogId },
     });
+    return !!participantsPresent
+      ? participantsPresent.map((participant) =>
+          AttendanceMapper.toDomain(participant),
+        )
+      : null;
+  }
 
-    const attendedUserIds = new Set(participantsPresent.map((p) => p.userId));
+  async putParticipantAbsences(
+    attendance: Attendance[],
+  ): Promise<Attendance[] | null> {
+    const participantAbsences = attendance.map((attendance) => {
+      return this.prisma.attendance.create({
+        data: {
+          userId: attendance.userId,
+          eventId: attendance.eventId,
+          eventLogId: attendance.eventLogId,
+          checkedInAt: attendance.checkedInAt,
+          status: attendance.status,
+        },
+      });
+    });
 
-    const absentees = participants.filter(
-      (p) => !attendedUserIds.has(p.userId),
-    );
+    const result = await this.prisma.$transaction(participantAbsences);
 
-    if (participantsPresent) {
-      const absenceUpdates = absentees.map((absense) =>
-        this.prisma.attendance.createMany({
-          data: {
-            userId: absense.userId,
-            eventId: eventId,
-            eventLogId: eventLogId,
-            checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
-            status: AttendanceStatus.absence,
-          },
-        }),
-      );
-
-      await this.prisma.$transaction(absenceUpdates);
-    } else {
-      const absenceUpdates = participants.map((absence) =>
-        this.prisma.attendance.createMany({
-          data: {
-            userId: absence.userId,
-            eventId: eventId,
-            eventLogId: eventLogId,
-            checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
-            status: AttendanceStatus.absence,
-          },
-        }),
-      );
-      await this.prisma.$transaction(absenceUpdates);
-    }
-
-    return !!result ? EventLogMapper.toDomain(result) : null;
+    return !!result
+      ? result.map((attendance) => AttendanceMapper.toDomain(attendance))
+      : null;
   }
 }

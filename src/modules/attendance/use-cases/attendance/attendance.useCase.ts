@@ -103,7 +103,7 @@ export class AttendanceUseCase {
         const notification = await Notification.create({
           userId: headerData.userId,
           eventId: bodyData.eventId,
-          message: 'Você qtingiu o número máximo de atrasos!',
+          message: 'Você atingiu o número máximo de atrasos!',
           type: 'alert' as NotificationTypes,
           createdAt: CustomDate.fixTimezoneoffset(new Date()),
           readed: false,
