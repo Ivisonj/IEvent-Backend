@@ -102,12 +102,23 @@ export class FinishEventUseCase {
       );
       await this.eventLogRepository.putParticipantAbsences(participantAbsences);
 
+      await this.eventLogRepository.updateParticipantAbsence(
+        bodyData.eventId,
+        absentees,
+      );
+
       const eventData = await this.eventLogRepository.eventExists(
         bodyData.eventId,
       );
 
       if (eventData) {
-        const participantNearAbsenceLimit = participants.filter(
+        const absentParticipants =
+          await this.eventLogRepository.absentParticipants(
+            bodyData.eventId,
+            absentees,
+          );
+
+        const participantNearAbsenceLimit = absentParticipants.filter(
           (participant) =>
             participant.absenceCount + 1 === eventData.absences_limit,
         );
@@ -126,7 +137,7 @@ export class FinishEventUseCase {
           }
         }
 
-        const participantAtMaxAbsences = participants.filter(
+        const participantAtMaxAbsences = absentParticipants.filter(
           (participant) =>
             participant.absenceCount === eventData.absences_limit,
         );
@@ -157,12 +168,23 @@ export class FinishEventUseCase {
       );
       await this.eventLogRepository.putParticipantAbsences(participantAbsences);
 
+      await this.eventLogRepository.updateParticipantAbsence(
+        bodyData.eventId,
+        participants,
+      );
+
       const eventData = await this.eventLogRepository.eventExists(
         bodyData.eventId,
       );
 
       if (eventData) {
-        const participantNearAbsenceLimit = participants.filter(
+        const absentParticipants =
+          await this.eventLogRepository.absentParticipants(
+            bodyData.eventId,
+            participants,
+          );
+
+        const participantNearAbsenceLimit = absentParticipants.filter(
           (participant) =>
             participant.absenceCount + 1 === eventData.absences_limit,
         );
@@ -181,7 +203,7 @@ export class FinishEventUseCase {
           }
         }
 
-        const participantAtMaxAbsences = participants.filter(
+        const participantAtMaxAbsences = absentParticipants.filter(
           (participant) =>
             participant.absenceCount === eventData.absences_limit,
         );

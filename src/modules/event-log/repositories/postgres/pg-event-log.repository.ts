@@ -114,6 +114,21 @@ export class PgEventLogRepository implements IEventLogRepository {
       : null;
   }
 
+  async absentParticipants(
+    eventId: string,
+    participant: Participant[],
+  ): Promise<Participant[] | null> {
+    const participantIds = participant.map((participant) => participant.userId);
+    const participants = await this.prisma.participant.findMany({
+      where: { eventId: eventId, userId: { in: participantIds } },
+    });
+    return !!participants
+      ? participants.map((participant) =>
+          ParticipantMapper.toDomain(participant),
+        )
+      : null;
+  }
+
   async participantsPresent(eventLogId: string): Promise<Attendance[] | null> {
     const participantsPresent = await this.prisma.attendance.findMany({
       where: { eventLogId: eventLogId },
@@ -145,5 +160,39 @@ export class PgEventLogRepository implements IEventLogRepository {
     return !!result
       ? result.map((attendance) => AttendanceMapper.toDomain(attendance))
       : null;
+  }
+
+  async updateParticipantAbsence(
+    eventId: string,
+    participants: Participant[],
+  ): Promise<void> {
+    const userIds = participants.map((participant) => participant.userId);
+
+    const participantsToUpdate = await this.prisma.participant.findMany({
+      where: { eventId: eventId, userId: { in: userIds } },
+    });
+
+    const participantIds = participantsToUpdate.map(
+      (participant) => participant.id,
+    );
+
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+      include: { recurrence: true },
+    });
+
+    if (
+      participantsToUpdate.some((p) => p.absenceCount >= event.absences_limit)
+    ) {
+      await this.prisma.participant.updateMany({
+        where: { id: { in: participantIds } },
+        data: { absenceCount: 1 },
+      });
+    } else {
+      await this.prisma.participant.updateMany({
+        where: { id: { in: participantIds } },
+        data: { absenceCount: { increment: 1 } },
+      });
+    }
   }
 }

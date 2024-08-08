@@ -21,8 +21,4 @@ export abstract class IAttendanceRepository {
     userId: string,
     status: string,
   ): Promise<Participant | null>;
-  abstract updateParticipantPresence(
-    eventId: string,
-    userId: string,
-  ): Promise<Participant | null>;
 }

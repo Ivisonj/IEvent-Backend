@@ -56,6 +56,7 @@ export class AttendanceUseCase {
       return left(new AttendanceErrors.PresenceAlreadyConfirmed());
 
     const event = await this.attendanceRepository.findEvent(bodyData.eventId);
+
     const eventStartTime = await this.attendanceRepository.eventStartTime(
       bodyData.eventLogId,
     );
@@ -70,52 +71,89 @@ export class AttendanceUseCase {
           ? AttendanceStatus.presence
           : AttendanceStatus.late;
 
-      const attendanceOrError = Attendance.create({
-        userId: headerData.userId,
-        eventId: bodyData.eventId,
-        eventLogId: bodyData.eventLogId,
-        checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
-        status: participantStatus,
-      });
-
-      const updateParticipantAttendance =
-        await this.attendanceRepository.updateParticipantAttendance(
-          bodyData.eventId,
-          headerData.userId,
-          AttendanceStatus.presence,
-        );
-
-      if (!updateParticipantAttendance)
-        return left(new AttendanceErrors.FailUpdateParticipantAttendance());
-
-      if (participantData.lateCount + 1 === event.delays_limit) {
-        const notification = await Notification.create({
+      if (participantStatus === AttendanceStatus.presence) {
+        const attendanceOrError = Attendance.create({
           userId: headerData.userId,
           eventId: bodyData.eventId,
-          message: 'Você está próximo de atingir o número máximo de atrasos!',
-          type: 'alert' as NotificationTypes,
-          createdAt: CustomDate.fixTimezoneoffset(new Date()),
-          readed: false,
+          eventLogId: bodyData.eventLogId,
+          checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
+          status: participantStatus,
         });
 
-        await this.notificationRepository.notify(notification);
-      } else if (participantData.lateCount === event.delays_limit) {
-        const notification = await Notification.create({
+        const updateParticipantAttendance =
+          await this.attendanceRepository.updateParticipantAttendance(
+            bodyData.eventId,
+            headerData.userId,
+            AttendanceStatus.presence,
+          );
+
+        if (!updateParticipantAttendance)
+          return left(new AttendanceErrors.FailUpdateParticipantAttendance());
+
+        const attendance =
+          await this.attendanceRepository.create(attendanceOrError);
+        const dto = AttendanceMapper.toDTO(attendance);
+        return right(dto);
+      } else if (participantStatus === AttendanceStatus.late) {
+        const attendanceOrError = Attendance.create({
           userId: headerData.userId,
           eventId: bodyData.eventId,
-          message: 'Você atingiu o número máximo de atrasos!',
-          type: 'alert' as NotificationTypes,
-          createdAt: CustomDate.fixTimezoneoffset(new Date()),
-          readed: false,
+          eventLogId: bodyData.eventLogId,
+          checkedInAt: CustomDate.fixTimezoneoffset(new Date()),
+          status: participantStatus,
         });
 
-        await this.notificationRepository.notify(notification);
+        const updateParticipantAttendance =
+          await this.attendanceRepository.updateParticipantAttendance(
+            bodyData.eventId,
+            headerData.userId,
+            AttendanceStatus.late,
+          );
+
+        if (!updateParticipantAttendance)
+          return left(new AttendanceErrors.FailUpdateParticipantAttendance());
+
+        const findParticipantData =
+          await this.attendanceRepository.participantData(
+            headerData.userId,
+            bodyData.eventId,
+          );
+
+        if (
+          findParticipantData &&
+          participantData.lateCount + 1 === event.delays_limit
+        ) {
+          const notification = await Notification.create({
+            userId: headerData.userId,
+            eventId: bodyData.eventId,
+            message: 'Você está próximo de atingir o número máximo de atrasos!',
+            type: 'alert' as NotificationTypes,
+            createdAt: CustomDate.fixTimezoneoffset(new Date()),
+            readed: false,
+          });
+
+          await this.notificationRepository.notify(notification);
+        } else if (
+          findParticipantData &&
+          participantData.lateCount === event.delays_limit
+        ) {
+          const notification = await Notification.create({
+            userId: headerData.userId,
+            eventId: bodyData.eventId,
+            message: 'Você atingiu o número máximo de atrasos!',
+            type: 'alert' as NotificationTypes,
+            createdAt: CustomDate.fixTimezoneoffset(new Date()),
+            readed: false,
+          });
+
+          await this.notificationRepository.notify(notification);
+        }
+
+        const attendance =
+          await this.attendanceRepository.create(attendanceOrError);
+        const dto = AttendanceMapper.toDTO(attendance);
+        return right(dto);
       }
-
-      const attendance =
-        await this.attendanceRepository.create(attendanceOrError);
-      const dto = AttendanceMapper.toDTO(attendance);
-      return right(dto);
     } else {
       const attendanceOrError = Attendance.create({
         userId: headerData.userId,
@@ -126,9 +164,10 @@ export class AttendanceUseCase {
       });
 
       const updateParticipantPresence =
-        await this.attendanceRepository.updateParticipantPresence(
+        await this.attendanceRepository.updateParticipantAttendance(
           bodyData.eventId,
           headerData.userId,
+          AttendanceStatus.presence,
         );
 
       if (!updateParticipantPresence)

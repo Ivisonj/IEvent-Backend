@@ -16,10 +16,18 @@ export abstract class IEventLogRepository {
   abstract checkDate(eventId: string, date: Date): Promise<boolean | null>;
   abstract endEvent(eventLogId: string, time: Date): Promise<EventLog | null>;
   abstract findParticipants(eventId: string): Promise<Participant[] | null>;
+  abstract absentParticipants(
+    eventId: string,
+    participants: Participant[],
+  ): Promise<Participant[] | null>;
   abstract participantsPresent(
     eventLogId: string,
   ): Promise<Attendance[] | null>;
   abstract putParticipantAbsences(
     attendance: Attendance[],
   ): Promise<Attendance[] | null>;
+  abstract updateParticipantAbsence(
+    eventId: string,
+    participants: Participant[],
+  ): Promise<void>;
 }
