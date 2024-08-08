@@ -8,6 +8,7 @@ import { EventModule } from './modules/event/event.module';
 import { ParticipantModule } from './modules/participant/participationRequest.module';
 import { EventLogModule } from './modules/event-log/event-log.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
+import { NotificationModule } from './modules/notification/notifications.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AttendanceModule } from './modules/attendance/attendance.module';
     ParticipantModule,
     EventLogModule,
     AttendanceModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
