@@ -110,23 +110,19 @@ export class AttendanceUseCase {
             AttendanceStatus.late,
           );
 
+        console.log(
+          'updateParticipantAttendance',
+          updateParticipantAttendance.lateCount,
+        );
+
         if (!updateParticipantAttendance)
           return left(new AttendanceErrors.FailUpdateParticipantAttendance());
 
-        const findParticipantData =
-          await this.attendanceRepository.participantData(
-            headerData.userId,
-            bodyData.eventId,
-          );
-
-        if (
-          findParticipantData &&
-          participantData.lateCount + 1 === event.delays_limit
-        ) {
+        if (updateParticipantAttendance.lateCount + 1 === event.delays_limit) {
           const notification = await Notification.create({
             userId: headerData.userId,
             eventId: bodyData.eventId,
-            message: 'Você está próximo de atingir o número máximo de atrasos!',
+            message: 'Você está próximo de atingir o limite de atrasos!',
             type: 'alert' as NotificationTypes,
             createdAt: CustomDate.fixTimezoneoffset(new Date()),
             readed: false,
@@ -134,13 +130,12 @@ export class AttendanceUseCase {
 
           await this.notificationRepository.notify(notification);
         } else if (
-          findParticipantData &&
-          participantData.lateCount === event.delays_limit
+          updateParticipantAttendance.lateCount === event.delays_limit
         ) {
           const notification = await Notification.create({
             userId: headerData.userId,
             eventId: bodyData.eventId,
-            message: 'Você atingiu o número máximo de atrasos!',
+            message: 'Você atingiu o limite de atrasos!',
             type: 'alert' as NotificationTypes,
             createdAt: CustomDate.fixTimezoneoffset(new Date()),
             readed: false,
