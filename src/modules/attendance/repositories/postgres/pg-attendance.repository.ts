@@ -26,7 +26,7 @@ export class PgAttendanceRepository implements IAttendanceRepository {
     return !!attendance ? AttendanceMapper.toDomain(result) : null;
   }
 
-  async isParticipant(
+  async participantData(
     userId: string,
     eventId: string,
   ): Promise<Participant | null> {
@@ -47,7 +47,7 @@ export class PgAttendanceRepository implements IAttendanceRepository {
     return !!register ? EventLogMapper.toDomain(register) : null;
   }
 
-  async getEvent(eventId: string): Promise<Event | null> {
+  async findEvent(eventId: string): Promise<Event | null> {
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
       include: { recurrence: true },
@@ -103,7 +103,7 @@ export class PgAttendanceRepository implements IAttendanceRepository {
         include: { recurrence: true },
       });
 
-      if (participant.lateCount > event.delays_limit) {
+      if (participant.lateCount >= event.delays_limit) {
         const updateParticipant = await this.prisma.participant.update({
           where: { id: participant.id },
           data: { lateCount: 1 },
@@ -123,23 +123,5 @@ export class PgAttendanceRepository implements IAttendanceRepository {
           : null;
       }
     }
-  }
-
-  async updateParticipantPresence(
-    eventId: string,
-    userId: string,
-  ): Promise<Participant | null> {
-    const participant = await this.prisma.participant.findFirst({
-      where: { eventId: eventId, userId: userId },
-    });
-
-    const updateParticipant = await this.prisma.participant.update({
-      where: { id: participant.id },
-      data: { presenceCount: { increment: 1 } },
-    });
-
-    return !!updateParticipant
-      ? ParticipantMapper.toDomain(updateParticipant)
-      : null;
   }
 }

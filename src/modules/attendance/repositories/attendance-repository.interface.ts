@@ -5,12 +5,12 @@ import { Event } from 'src/modules/event/domain/Event';
 
 export abstract class IAttendanceRepository {
   abstract create(attendance: Attendance): Promise<Attendance | null>;
-  abstract isParticipant(
+  abstract participantData(
     userId: string,
     eventId: string,
   ): Promise<Participant | null>;
   abstract eventLogExists(eventLogId: string): Promise<EventLog | null>;
-  abstract getEvent(eventId: string): Promise<Event | null>;
+  abstract findEvent(eventId: string): Promise<Event | null>;
   abstract eventStartTime(eventLogId: string): Promise<Date | null>;
   abstract attendanceRecordExists(
     event_Log: string,
@@ -20,9 +20,5 @@ export abstract class IAttendanceRepository {
     eventId: string,
     userId: string,
     status: string,
-  ): Promise<Participant | null>;
-  abstract updateParticipantPresence(
-    eventId: string,
-    userId: string,
   ): Promise<Participant | null>;
 }
