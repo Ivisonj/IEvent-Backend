@@ -14,7 +14,7 @@ import { GetUserNotificationsErrors } from './get-user-notifications.errors';
 import { GetUserNotificationsUseCase } from './get-user-notifications.useCase';
 
 @ApiTags('Notification')
-@Controller('api/v1/notifications')
+@Controller('api/v1/notifications/user')
 export class GetUserNotificationsController {
   constructor(private readonly useCase: GetUserNotificationsUseCase) {}
 
