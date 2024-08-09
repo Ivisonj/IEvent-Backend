@@ -65,17 +65,24 @@ export class StartEventUseCase {
 
     const event = await this.eventLogRepository.create(registerEventOrError);
 
-    const notification = Notification.create({
-      userId: headerData.userId,
-      eventId: eventId,
-      message: 'O evento iniciou!',
-      type: 'alert' as NotificationTypes,
-      sender: SenderTypes.event,
-      createdAt: CustomDate.fixTimezoneoffset(new Date()),
-      readed: false,
-    });
+    const participants =
+      await this.eventLogRepository.findParticipants(eventId);
 
-    await this.notificationRepository.notify(notification);
+    if (participants.length > 0) {
+      for (const participant of participants) {
+        const notifications = Notification.create({
+          userId: participant.userId,
+          eventId: eventId,
+          message: 'O evento iniciou!',
+          type: 'alert' as NotificationTypes,
+          sender: SenderTypes.event,
+          createdAt: CustomDate.fixTimezoneoffset(new Date()),
+          readed: false,
+        });
+
+        await this.notificationRepository.notify(notifications);
+      }
+    }
 
     const dto = EventLogMapper.toDTO(event);
     return right(dto);

@@ -65,21 +65,25 @@ export class FinishEventUseCase {
 
     if (!eventEnded) return left(new FinishEventErrors.FailToFinishEvent());
 
-    const notification = Notification.create({
-      userId: headerData.userId,
-      eventId: bodyData.eventId,
-      message: 'O evento terminou!',
-      type: 'alert' as NotificationTypes,
-      sender: SenderTypes.event,
-      createdAt: CustomDate.fixTimezoneoffset(new Date()),
-      readed: false,
-    });
-
-    await this.notificationRepository.notify(notification);
-
     const participants = await this.eventLogRepository.findParticipants(
       bodyData.eventId,
     );
+
+    if (participants.length > 0) {
+      for (const participant of participants) {
+        const notifications = Notification.create({
+          userId: participant.userId,
+          eventId: bodyData.eventId,
+          message: 'O evento terminou!',
+          type: 'alert' as NotificationTypes,
+          sender: SenderTypes.event,
+          createdAt: CustomDate.fixTimezoneoffset(new Date()),
+          readed: false,
+        });
+
+        await this.notificationRepository.notify(notifications);
+      }
+    }
 
     const participantsPresent =
       await this.eventLogRepository.participantsPresent(eventLogId);
