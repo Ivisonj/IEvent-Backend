@@ -26,9 +26,10 @@ export class GetUserNotificationsUseCase {
 
     if (!userExists) return left(new GetUserNotificationsErrors.UserNotFound());
 
-    const notifications = await this.notificationRepository.findNotifications(
-      headerData.userId,
-    );
+    const notifications =
+      await this.notificationRepository.findUserNotifications(
+        headerData.userId,
+      );
 
     const dto = notifications.map((notification) =>
       NotificationMapper.toDTO(notification),

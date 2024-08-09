@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { NotificationTypes } from '../domain/notification';
+import { NotificationTypes, SenderTypes } from '../domain/notification';
 
 export class NotificationDTO {
   @ApiProperty()
@@ -12,6 +12,8 @@ export class NotificationDTO {
   message?: string;
   @ApiProperty()
   type: NotificationTypes;
+  @ApiProperty()
+  sender: SenderTypes;
   @ApiProperty()
   createdAt: string | Date;
   @ApiProperty()

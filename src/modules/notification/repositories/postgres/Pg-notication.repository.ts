@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Notification } from '../../domain/notification';
+import { Notification, SenderTypes } from '../../domain/notification';
 import { INotificationRepository } from '../notification-repository.interface';
 import { PrismaService } from 'src/shared/infra/database/prisma/prisma-service.module';
 import { NotificationMapper } from '../../mappers/notification.map';
@@ -24,9 +24,9 @@ export class PgNotificationRepository implements INotificationRepository {
     return !!user ? UserMapper.toDomain(user) : null;
   }
 
-  async findNotifications(userId: string): Promise<Notification[] | null> {
+  async findUserNotifications(userId: string): Promise<Notification[] | null> {
     const notifications = await this.prisma.notification.findMany({
-      where: { userId: userId },
+      where: { userId: userId, AND: { sender: SenderTypes.event } },
     });
     return !!notifications
       ? notifications.map((notification) =>

@@ -13,6 +13,7 @@ import { CustomDate } from 'src/shared/application/customDate';
 import {
   Notification,
   NotificationTypes,
+  SenderTypes,
 } from 'src/modules/notification/domain/notification';
 import { INotificationRepository } from 'src/modules/notification/repositories/notification-repository.interface';
 
@@ -124,6 +125,7 @@ export class AttendanceUseCase {
             eventId: bodyData.eventId,
             message: 'Você está próximo de atingir o limite de atrasos!',
             type: 'alert' as NotificationTypes,
+            sender: SenderTypes.event,
             createdAt: CustomDate.fixTimezoneoffset(new Date()),
             readed: false,
           });
@@ -137,6 +139,7 @@ export class AttendanceUseCase {
             eventId: bodyData.eventId,
             message: 'Você atingiu o limite de atrasos!',
             type: 'alert' as NotificationTypes,
+            sender: SenderTypes.event,
             createdAt: CustomDate.fixTimezoneoffset(new Date()),
             readed: false,
           });

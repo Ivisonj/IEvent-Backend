@@ -4,5 +4,7 @@ import { Notification } from '../domain/notification';
 export abstract class INotificationRepository {
   abstract notify(notification: Notification): Promise<void>;
   abstract userExists(userId: string): Promise<User | null>;
-  abstract findNotifications(userId: string): Promise<Notification[] | null>;
+  abstract findUserNotifications(
+    userId: string,
+  ): Promise<Notification[] | null>;
 }

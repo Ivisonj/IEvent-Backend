@@ -9,6 +9,7 @@ import { ParticipantMapper } from '../../mappers/participant.map';
 import {
   Notification,
   NotificationTypes,
+  SenderTypes,
 } from 'src/modules/notification/domain/notification';
 import { CustomDate } from 'src/shared/application/customDate';
 
@@ -60,6 +61,7 @@ export class CreateParticipantUseCase {
       eventId: eventId,
       message: 'Você tem uma nova solicitação',
       type: 'solicitation' as NotificationTypes,
+      sender: SenderTypes.user,
       createdAt: CustomDate.fixTimezoneoffset(new Date()),
       readed: false,
     });

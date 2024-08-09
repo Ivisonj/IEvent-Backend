@@ -1,6 +1,10 @@
 import { Notification as NotificationPrisma } from '@prisma/client';
 import { NotificationDTO } from '../dtos/notification.DTO';
-import { Notification, NotificationTypes } from '../domain/notification';
+import {
+  Notification,
+  NotificationTypes,
+  SenderTypes,
+} from '../domain/notification';
 
 export class NotificationMapper {
   public static toDTO(notification: Notification): NotificationDTO {
@@ -10,6 +14,7 @@ export class NotificationMapper {
       eventId: notification.eventId,
       message: notification.message,
       type: notification.type,
+      sender: notification.sender,
       createdAt: notification.createdAt,
       readed: notification.readed,
     };
@@ -22,6 +27,7 @@ export class NotificationMapper {
         eventId: raw.eventId,
         message: raw.message,
         type: raw.type as NotificationTypes,
+        sender: raw.sender as SenderTypes,
         createdAt: raw.createdAt,
         readed: raw.readed,
       },
@@ -37,6 +43,7 @@ export class NotificationMapper {
       eventId: notification.eventId,
       message: notification.message,
       type: notification.type,
+      sender: notification.sender,
       createdAt: notification.createdAt,
       readed: notification.readed,
     };

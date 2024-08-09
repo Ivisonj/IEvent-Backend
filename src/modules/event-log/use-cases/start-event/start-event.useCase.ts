@@ -10,6 +10,7 @@ import { CustomDate } from 'src/shared/application/customDate';
 import {
   Notification,
   NotificationTypes,
+  SenderTypes,
 } from 'src/modules/notification/domain/notification';
 import { INotificationRepository } from 'src/modules/notification/repositories/notification-repository.interface';
 
@@ -69,6 +70,7 @@ export class StartEventUseCase {
       eventId: eventId,
       message: 'O evento iniciou!',
       type: 'alert' as NotificationTypes,
+      sender: SenderTypes.event,
       createdAt: CustomDate.fixTimezoneoffset(new Date()),
       readed: false,
     });

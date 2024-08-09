@@ -5,11 +5,17 @@ export enum NotificationTypes {
   alert = 'alert',
 }
 
+export enum SenderTypes {
+  user = 'user',
+  event = 'event',
+}
+
 interface NotificationProps {
   userId: string;
   eventId: string;
   message?: string;
   type: NotificationTypes;
+  sender: SenderTypes;
   createdAt: string | Date;
   readed: boolean;
 }
@@ -29,6 +35,10 @@ export class Notification extends Entity<NotificationProps> {
 
   get type(): NotificationTypes {
     return this.props.type;
+  }
+
+  get sender(): SenderTypes {
+    return this.props.sender;
   }
 
   get createdAt(): string | Date {

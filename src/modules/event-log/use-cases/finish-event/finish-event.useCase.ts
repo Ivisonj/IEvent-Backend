@@ -13,6 +13,7 @@ import { INotificationRepository } from 'src/modules/notification/repositories/n
 import {
   Notification,
   NotificationTypes,
+  SenderTypes,
 } from 'src/modules/notification/domain/notification';
 import {
   Attendance,
@@ -69,6 +70,7 @@ export class FinishEventUseCase {
       eventId: bodyData.eventId,
       message: 'O evento terminou!',
       type: 'alert' as NotificationTypes,
+      sender: SenderTypes.event,
       createdAt: CustomDate.fixTimezoneoffset(new Date()),
       readed: false,
     });
@@ -130,6 +132,7 @@ export class FinishEventUseCase {
               eventId: bodyData.eventId,
               message: 'Você está próximo de atingir o limite de faltas!',
               type: 'alert' as NotificationTypes,
+              sender: SenderTypes.event,
               createdAt: CustomDate.fixTimezoneoffset(new Date()),
               readed: false,
             });
@@ -149,6 +152,7 @@ export class FinishEventUseCase {
               eventId: bodyData.eventId,
               message: 'Você atintiu o limite de faltas!',
               type: 'alert' as NotificationTypes,
+              sender: SenderTypes.event,
               createdAt: CustomDate.fixTimezoneoffset(new Date()),
               readed: false,
             });
@@ -196,6 +200,7 @@ export class FinishEventUseCase {
               eventId: bodyData.eventId,
               message: 'Você está próximo de atingir o limite de faltas!',
               type: 'alert' as NotificationTypes,
+              sender: SenderTypes.event,
               createdAt: CustomDate.fixTimezoneoffset(new Date()),
               readed: false,
             });
@@ -215,6 +220,7 @@ export class FinishEventUseCase {
               eventId: bodyData.eventId,
               message: 'Você atintiu o limite de faltas!',
               type: 'alert' as NotificationTypes,
+              sender: SenderTypes.event,
               createdAt: CustomDate.fixTimezoneoffset(new Date()),
               readed: false,
             });
